@@ -12,27 +12,24 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.user.User;
 
 @Entity
 @Table(name = "UserGroups")
-public class UserGroup {
+public class UserGroup extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "userGroup_ID")
-	private Long id;
+	private Long userGroup_ID;
 
 	@NotEmpty(message = "User group name is required")
 	@Length(max = 100)
-	@Column(name = "name")
 	private String name;
 
-	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
 	private List<User> users;
 
@@ -42,23 +39,25 @@ public class UserGroup {
 	public UserGroup(UserGroup userGroup) {
 	}
 
-	// Getters
+	public UserGroup(String name) {
+		this.name = name;
+	}
 
-	public Long getId() {
-		return this.id;
+	// Getters
+	public Long getUserGroup_ID() {
+		return userGroup_ID;
 	}
 
 	public String getName() {
-		return this.name;
-	}
-
-	// Setters
-
-	public void setName(String name) {
-		this.name = name;
+		return name;
 	}
 
 	public List<User> getUsers() {
 		return users;
+	}
+
+	// Setters
+	public void setName(String name) {
+		this.name = name;
 	}
 }

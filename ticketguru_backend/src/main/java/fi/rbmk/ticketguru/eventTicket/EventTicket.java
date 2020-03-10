@@ -10,12 +10,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+
+import org.springframework.hateoas.ResourceSupport;
+
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 
 @Entity
 @Table(name = "EventTickets")
-public class EventTicket {
+public class EventTicket extends ResourceSupport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,22 +29,22 @@ public class EventTicket {
     @NotEmpty(message = "Event must be set")
     @ManyToOne
     @JoinColumn(name = "event_ID")
-    private Event event; 
+    private Event event;
 
     @NotEmpty(message = "Ticket type must be set")
     @ManyToOne
     @JoinColumn(name = "ticketType_ID")
-    private TicketType ticketType; 
+    private TicketType ticketType;
 
     public EventTicket() {
-    super();
+        super();
     }
 
     public EventTicket(EventTicket eventTicket) {
     }
 
     // Getters
-    public Long getId() {
+    public Long getEventTicket_ID() {
         return id;
     }
 
@@ -61,29 +64,24 @@ public class EventTicket {
         return ticketType;
     }
 
-    //Setters
-    public void setId(Long id) {
+    // Setters
+    public void setEventTicket_ID(Long id) {
         this.id = id;
     }
-    
+
     public void setTicketCount(Long ticketCount) {
         this.ticketCount = ticketCount;
     }
+
     public void setPrice(Long price) {
         this.price = price;
     }
-    
+
     public void setEvent(Event event) {
         this.event = event;
     }
-    
-    public void setTicketTypeD(TicketType ticketType) {
-        this.ticketType = ticketType;
-    }
 
-    @Override
-    public String toString() {
-    return "EventTicket [eventTickets_ID=" + id + ", event=" + event + ", ticketType="
-        + ticketType + ", ticketCount=" + ticketCount + ", price=" + price + "]";
+    public void setTicketType(TicketType ticketType) {
+        this.ticketType = ticketType;
     }
 }

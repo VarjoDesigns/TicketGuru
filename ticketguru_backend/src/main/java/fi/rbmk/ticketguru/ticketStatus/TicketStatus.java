@@ -11,27 +11,25 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.ticket.Ticket;
 
 @Entity
 @Table(name = "TicketStatuses")
-public class TicketStatus {
+public class TicketStatus extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ticketStatus_ID")
-	private Long id;
+	private Long ticketStatus_ID;
 
 	@NotEmpty(message = "Ticket status is required")
 	@Length(max = 50)
 	@Column(name = "name")
 	private String name;
-	
-	@JsonIgnore
+
 	@OneToMany(mappedBy = "ticketStatus")
 	private List<Ticket> tickets;
 
@@ -44,29 +42,25 @@ public class TicketStatus {
 	public TicketStatus(String name) {
 		this.name = name;
 	}
-	
-	//Getters
 
-	public Long getId() {
-		return this.id;
+	// Getters
+
+	public Long getTicketStatus_ID() {
+		return this.ticketStatus_ID;
 	}
 
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public List<Ticket> getTickets() {
 		return tickets;
 	}
-	
-	//Setters
+
+	// Setters
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public void setTickets(List<Ticket> tickets) {
-		this.tickets = tickets;
 	}
 
 }

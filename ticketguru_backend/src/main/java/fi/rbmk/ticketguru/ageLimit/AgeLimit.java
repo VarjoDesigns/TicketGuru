@@ -11,20 +11,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.event.Event;
 
 @Entity
 @Table(name = "AgeLimits")
-public class AgeLimit {
+public class AgeLimit extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ageLimit_ID")
-	private Long id;
+	private Long ageLimit_ID;
 
 	@NotEmpty(message = "Age limit must be set")
 	@Length(max = 50)
@@ -34,8 +33,7 @@ public class AgeLimit {
 	@Length(max = 500)
 	@Column(name = "specifier")
 	private String specifier;
-	
-	@JsonIgnore
+
 	@OneToMany(mappedBy = "ageLimit")
 	private List<Event> events;
 
@@ -44,7 +42,7 @@ public class AgeLimit {
 
 	public AgeLimit(AgeLimit ageLimit) {
 	}
-	
+
 	public AgeLimit(String name) {
 		this.name = name;
 	}
@@ -53,27 +51,27 @@ public class AgeLimit {
 		this.name = name;
 		this.specifier = specifier;
 	}
-	
-	//Getters
 
-	public Long getId() {
-		return this.id;
+	// Getters
+
+	public Long getAgeLimit_ID() {
+		return this.ageLimit_ID;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public String getSpecifier() {
 		return this.specifier;
 	}
-	
+
 	public List<Event> getEvents() {
 		return events;
 	}
-	
-	//Setters
-	
+
+	// Setters
+
 	public void setName(String name) {
 		this.name = name;
 	}

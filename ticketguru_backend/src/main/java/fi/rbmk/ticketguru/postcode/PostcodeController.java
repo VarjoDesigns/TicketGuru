@@ -1,59 +1,128 @@
 package fi.rbmk.ticketguru.postcode;
-import java.net.URISyntaxException;
+
+import java.net.URI;
+import java.util.List;
+
 import javax.validation.Valid;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@CrossOrigin(origins = "http://localhost:3000")
+import fi.rbmk.ticketguru.eventOrganizer.*;
+import fi.rbmk.ticketguru.venue.*;
+
 @RestController
 @RequestMapping(value = "/api/postcodes", produces = "application/hal+json")
 public class PostcodeController {
-	
-	// Injektoidaan repo & assembler
-	@Autowired
-    private PostcodeRepository postcodeRepository;
-	@Autowired
-    private PostcodeResourceAssembler postcodeAssembler;
-	
-	
-	// Get all postcodes
-	@GetMapping()
-    public ResponseEntity<CollectionModel<EntityModel<Postcode>>> findAll() {
-        return ResponseEntity.ok(postcodeAssembler.toCollectionModel(postcodeRepository.findAll()));
-    }
-	
-	// Get single postcode
-    @GetMapping("/{id}")
-    EntityModel<Postcode> one(@PathVariable Long id) {
-    	Postcode postcode = postcodeRepository.findById(id) .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        return postcodeAssembler.toModel(postcode);
-    }
-    
-    // Create postcode
-    @PostMapping
-    ResponseEntity<?> setPostcode(@Valid @RequestBody Postcode postcode) throws URISyntaxException {
-        EntityModel<Postcode> entityModel = postcodeAssembler.toModel(postcodeRepository.save(postcode));
-        return ResponseEntity.created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()).body(entityModel);
-    }
-    
- // Delete postcode
-    @DeleteMapping("/{id}")
-    ResponseEntity<?> deletePostcode(@PathVariable Long id) {
-    	postcodeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-    	postcodeRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+
+    @Autowired PostcodeRepository pRepository;
+    @Autowired EventOrganizerRepository eoRepository;
+    @Autowired VenueRepository vRepository;
+
+    @PostMapping(produces = "application/hal+json")
+    ResponseEntity<?> add(@Valid @RequestBody Postcode newPostcode) {
+        try {
+            Postcode postcode = pRepository.save(newPostcode);
+            PostcodeLinks links = new PostcodeLinks(postcode);
+            postcode.add(links.getAll());
+            Resource<Postcode> resource = new Resource<Postcode>(postcode);
+            return ResponseEntity.ok(resource);
+        } catch (DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("Duplicate entry");
+        }
     }
 
+    @PatchMapping(value = "/{id}", produces = "application/hal+json")
+    ResponseEntity<Postcode> edit(@Valid @RequestBody Postcode newPostcode, @PathVariable Long id) {
+        Postcode postcode = pRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if(newPostcode.getPostcode() != "") { postcode.setPostcode(newPostcode.getPostcode()); }
+        if(newPostcode.getCity() != "") { postcode.setCity(newPostcode.getCity()); }
+        if(newPostcode.getCountry() != "") { postcode.setCountry(newPostcode.getCountry()); }
+        pRepository.save(postcode);
+        return ResponseEntity.created(URI.create("/" + postcode.getPostcode_ID())).build();
+    }
+
+    @DeleteMapping(value = "/{id}", produces = "application/hal+json")
+    ResponseEntity<?> delete(@PathVariable Long id) {
+        return pRepository.findById(id).map(m -> {
+            pRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+    }
+
+    @GetMapping(produces = "application/hal+json")
+    ResponseEntity<Resources<Postcode>> all() {
+        List<Postcode> postcodes = pRepository.findAll();
+        Link link = linkTo(PostcodeController.class).withSelfRel();
+        if (postcodes.size() != 0) {
+            for (Postcode postcode : postcodes) {
+                PostcodeLinks links = new PostcodeLinks(postcode);
+                postcode.add(links.getAll());
+            }
+            Resources<Postcode> resources = new Resources<Postcode>(postcodes, link);
+            return ResponseEntity.ok(resources);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping(value = "/{id}", produces = "application/hal+json")
+    public ResponseEntity<Resource<Postcode>> one(@PathVariable Long id) {
+        Postcode postcode = pRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        PostcodeLinks links = new PostcodeLinks(postcode);
+        postcode.add(links.getAll());
+        Resource<Postcode> resource = new Resource<Postcode>(postcode);
+        return ResponseEntity.ok(resource);
+    }
+
+    @GetMapping(value = "/{id}/eventOrganizers", produces = "application/hal+json")
+    public ResponseEntity<Resources<EventOrganizer>> getEventOrganizers(@PathVariable Long id) {
+        Postcode postcode = pRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        Link link = linkTo(PostcodeController.class).withSelfRel();
+        List<EventOrganizer> eventOrganizers = postcode.getEventOrganizers();
+        if (eventOrganizers.size() != 0) {
+            for (EventOrganizer eventOrganizer : eventOrganizers) {
+                Long eventOrganizer_ID = eventOrganizer.getEventOrganizer_ID();
+                Link selfLink = linkTo(PostcodeController.class).slash(eventOrganizer_ID).withSelfRel();
+                eventOrganizer.add(selfLink);
+            }
+            Resources<EventOrganizer> resources = new Resources<EventOrganizer>(eventOrganizers, link);
+            return ResponseEntity.ok(resources);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
+
+    @GetMapping(value = "/{id}/venues", produces = "application/hal+json")
+    public ResponseEntity<Resources<Venue>> getVenues(@PathVariable Long id) {
+        Postcode postcode = pRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        Link link = linkTo(PostcodeController.class).withSelfRel();
+        List<Venue> venues = postcode.getVenues();
+        if (venues.size() != 0) {
+            for (Venue venue : venues) {
+                Long venue_ID = venue.getVenue_ID();
+                Link selfLink = linkTo(PostcodeController.class).slash(venue_ID).withSelfRel();
+                venue.add(selfLink);
+            }
+            Resources<Venue> resources = new Resources<Venue>(venues, link);
+            return ResponseEntity.ok(resources);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }

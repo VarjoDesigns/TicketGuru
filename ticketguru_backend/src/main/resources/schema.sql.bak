@@ -168,6 +168,7 @@ password VARCHAR
 name VARCHAR
 (50) NOT NULL,
 userGroup_ID INTEGER NOT NULL,
+active BOOLEAN NOT NULL,
 PRIMARY KEY
 (user_ID)
 );

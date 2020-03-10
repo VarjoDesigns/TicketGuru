@@ -14,12 +14,13 @@ import javax.validation.constraints.NotEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.eventTicket.EventTicket;
 
 @Entity
 @Table(name = "TicketTypes")
-public class TicketType {
+public class TicketType extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,7 +31,7 @@ public class TicketType {
 	@Length(max = 100)
 	@Column(name = "name")
 	private String name;
-	
+
 	@JsonIgnore
 	@OneToMany(mappedBy = "ticketType")
 	private List<EventTicket> eventTickets;
@@ -44,25 +45,25 @@ public class TicketType {
 	public TicketType(String name) {
 		this.name = name;
 	}
-	
-	//Getters
 
-	public Long getId() {
+	// Getters
+
+	public Long getTicketType_ID() {
 		return this.id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
-	
-	//Setters
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public List<EventTicket> getEventTickets() {
 		return eventTickets;
+	}
+
+	// Setters
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

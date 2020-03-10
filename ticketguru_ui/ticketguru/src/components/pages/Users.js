@@ -28,7 +28,7 @@ export default function Users() {
     setIsLoading(true);
     fetch('http://localhost:8080/api/users')
       .then(response => response.json())
-      .then(data => setUsers(data));
+      .then(data => setUsers(data._embedded.users));
     setIsLoading(false);
   };
 
@@ -90,7 +90,11 @@ export default function Users() {
     },
     {
       Header: 'Password',
-      accessor: 'passwordHash'
+      accessor: 'password'
+    },
+    {
+      Header: 'User Group',
+      accessor: '_links.userGroups.href'
     }
   ];
 

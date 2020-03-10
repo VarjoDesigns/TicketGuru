@@ -8,7 +8,5 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface AgeLimitRepository extends CrudRepository<AgeLimit, Long> {
 	
-	List<AgeLimit> findByName(String name);
 	List<AgeLimit> findAll();
-	
 }
