@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.hateoas.ResourceSupport;
 
@@ -24,14 +25,15 @@ public class EventTicket extends ResourceSupport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "eventTicket_ID")
     private Long id;
-    private Long ticketCount, price;
+    private Long ticketCount;
+    private Double price;
 
-    @NotEmpty(message = "Event must be set")
+    @NotNull(message = "Event must be set")
     @ManyToOne
     @JoinColumn(name = "event_ID")
     private Event event;
 
-    @NotEmpty(message = "Ticket type must be set")
+    @NotNull(message = "Ticket type must be set")
     @ManyToOne
     @JoinColumn(name = "ticketType_ID")
     private TicketType ticketType;
@@ -52,7 +54,7 @@ public class EventTicket extends ResourceSupport {
         return ticketCount;
     }
 
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
 
@@ -73,7 +75,7 @@ public class EventTicket extends ResourceSupport {
         this.ticketCount = ticketCount;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

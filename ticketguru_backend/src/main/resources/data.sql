@@ -49,12 +49,27 @@ VALUES
 INSERT INTO AgeLimits
     (name, specifier)
 VALUES
-    ('K7', 'Tapahtuma kielletty alle 7-vuotiailta');
+    ('K7', 'Tapahtuma ei sovellu alle 7-vuotiaille');
 
 INSERT INTO AgeLimits
     (name, specifier)
 VALUES
-    ('K13', 'Tapahtuma kielletty alle 13-vuotiailta');
+    ('K13', 'Tapahtuma ei sovellu alle 13-vuotiaille');
+    
+INSERT INTO AgeLimits
+    (name, specifier)
+VALUES
+    ('K16', 'Tapahtuma ei sovellu alle 16-vuotiaille');
+    
+INSERT INTO AgeLimits
+    (name, specifier)
+VALUES
+    ('K18', 'Tapahtuma ei sovellu alle 18-vuotiaille');
+    
+INSERT INTO AgeLimits
+    (name, specifier)
+VALUES
+    ('S', 'Ikärajaton tapahtuma, sopii kaikenikäisille');
 
 -- POSTCODES
 
@@ -121,18 +136,51 @@ INSERT INTO TicketTypes
     (name)
 VALUES
     (
-        'Aikuisten lippu'
+        'Aikuinen'
     );
 INSERT INTO TicketTypes
     (name)
 VALUES
     (
-        'Lasten lippu'
+        'Lapsi 7-16v'
+    );
+    
+INSERT INTO TicketTypes
+    (name)
+VALUES
+    (
+        'Eläkeläinen'
+    );
+    
+INSERT INTO TicketTypes
+    (name)
+VALUES
+    (
+        'Varus- tai siviilipalvelusmies'
+    );
+    
+INSERT INTO TicketTypes
+    (name)
+VALUES
+    (
+        'Työtön'
     );
 
 -- TICKETSTATUSES
 
 INSERT INTO TicketStatuses (name) VALUES ('voimassa');
+
+INSERT INTO TicketStatuses (name) VALUES ('mitätöity');
+
+INSERT INTO TicketStatuses (name) VALUES ('peruttu');
+
+INSERT INTO TicketStatuses (name) VALUES ('maksettu');
+
+INSERT INTO TicketStatuses (name) VALUES ('hyväksymätön');
+
+INSERT INTO TicketStatuses (name) VALUES ('epäonnistui');
+
+INSERT INTO TicketStatuses (name) VALUES ('hylätty');
 
 -- EVENTTICKETS
 

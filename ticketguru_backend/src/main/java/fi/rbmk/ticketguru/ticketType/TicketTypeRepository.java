@@ -8,6 +8,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource
 public interface TicketTypeRepository extends CrudRepository<TicketType, Long> {
 
+	List<TicketType> findByName(String name);
 	List<TicketType> findAll();
 
 }

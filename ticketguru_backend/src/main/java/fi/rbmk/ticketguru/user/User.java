@@ -8,8 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -31,6 +32,7 @@ public class User extends ResourceSupport {
 	@Column(name = "user_ID", nullable = false, updatable = false)
 	private Long user_ID;
 
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotEmpty(message = "Password is required")
 	@Length(max = 100)
 	private String password;
@@ -42,10 +44,10 @@ public class User extends ResourceSupport {
 	private boolean active = false;
 
 	@ManyToOne
+	@NotNull(message = "User Group is required")
 	@JoinColumn(name = "userGroup_ID")
 	private UserGroup userGroup;
 
-	@JsonIgnore
 	@OneToMany(mappedBy = "user")
 	private List<SaleEvent> saleEvents;
 

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fi.rbmk.ticketguru.eventTicket.EventTicketRepository;
 import fi.rbmk.ticketguru.saleEvent.*;
 import fi.rbmk.ticketguru.userGroup.*;
 
@@ -37,19 +38,21 @@ public class UserController {
     @Autowired
     UserGroupRepository uGRepository;
 
+    @Autowired
+    EventTicketRepository eTRepository;
+
     @PostMapping(produces = "application/hal+json")
-    ResponseEntity<?> add(@Valid @RequestBody User user) {
+    ResponseEntity<?> add(@Valid @RequestBody User newUser) {
         try {
-            Long id = uRepository.save(user).getUser_ID();
-            Link selfLink = linkTo(UserController.class).slash(id).withSelfRel();
-            Link userGroupLink = linkTo(methodOn(UserController.class).getUserGroup(id)).withRel("userGroup");
-            user.add(selfLink);
-            user.add(userGroupLink);
+            User user = uRepository.save(newUser);
+            UserLinks userLinks = new UserLinks(user);
+            user.add(userLinks.getAll());
+            Resource<User> resource = new Resource<User>(user);
+            return ResponseEntity.ok(resource);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().body("Duplicate entry");
         }
-        Resource<User> resource = new Resource<User>(user);
-        return ResponseEntity.ok(resource);
+
     }
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
@@ -85,11 +88,8 @@ public class UserController {
         Link link = linkTo(UserController.class).withSelfRel();
         if (users.size() != 0) {
             for (User user : users) {
-                Long id = user.getUser_ID();
-                Link selfLink = linkTo(UserController.class).slash(id).withSelfRel();
-                Link userGroupLink = linkTo(methodOn(UserController.class).getUserGroup(id)).withRel("userGroup");
-                user.add(selfLink);
-                user.add(userGroupLink);
+                UserLinks userLinks = new UserLinks(user);
+                user.add(userLinks.getAll());
             }
             Resources<User> resources = new Resources<User>(users, link);
             return ResponseEntity.ok(resources);
@@ -101,10 +101,8 @@ public class UserController {
     @GetMapping(value = "/{id}", produces = "application/hal+json")
     public ResponseEntity<Resource<User>> one(@PathVariable Long id) {
         User user = uRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        Link selfLink = linkTo(UserController.class).slash(id).withSelfRel();
-        Link userGroupLink = linkTo(methodOn(UserController.class).getUserGroup(id)).withRel("userGroup");
-        user.add(selfLink);
-        user.add(userGroupLink);
+        UserLinks userLinks = new UserLinks(user);
+        user.add(userLinks.getAll());
         Resource<User> resource = new Resource<User>(user);
         return ResponseEntity.ok(resource);
     }
@@ -122,7 +120,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/saleEvents", produces = "application/hal+json")
-    public ResponseEntity<Resources<SaleEvent>> getUsers(@PathVariable Long id) {
+    public ResponseEntity<Resources<SaleEvent>> getSaleEvent(@PathVariable Long id) {
         User user = uRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         Link link = linkTo(UserController.class).withSelfRel();
         List<SaleEvent> saleEvents = user.getSaleEvents();

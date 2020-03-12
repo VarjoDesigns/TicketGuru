@@ -113,10 +113,8 @@ public class SaleEventController {
 		SaleEvent saleEvent = sERepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
 		User user = saleEvent.getUser();
-		Link selfLink = linkTo(methodOn(UserController.class).one(user.getUser_ID())).withSelfRel();
-		Link userLink = linkTo(methodOn(UserController.class).getUsers(id)).withRel("user");
-		user.add(selfLink);
-		user.add(userLink);
+		UserLinks userLinks = new UserLinks(user);
+		user.add(userLinks.getAll());
 		Resource<User> resource = new Resource<User>(user);
 		return ResponseEntity.ok(resource);
 	}

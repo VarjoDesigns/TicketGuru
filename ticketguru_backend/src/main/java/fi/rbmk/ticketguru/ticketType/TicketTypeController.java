@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
@@ -38,9 +38,20 @@ public class TicketTypeController {
     EventTicketRepository eventTicketRepository;
 
     @PostMapping(produces = "application/hal+json")
-    ResponseEntity<?> add(@Valid @RequestBody TicketType ticketType) {
+    public ResponseEntity<?> add(@Valid @RequestBody TicketType newTicketType) {
         try {
-            Long id = ticketTypeRepository.save(ticketType).getTicketType_ID();
+        	TicketType ticketType = ticketTypeRepository.save(newTicketType);
+        	TicketTypeLinks links = new TicketTypeLinks(ticketType);
+        	ticketType.add(links.getAll());
+        	Resource<TicketType> resource = new Resource<TicketType>(ticketType);
+        	return ResponseEntity.created(URI.create("/api/ticketTypes/" + ticketType.getTicketType_ID())).body(resource);
+        } catch (DuplicateKeyException e) {
+        	return ResponseEntity.badRequest().body("Duplicate entry");
+        }
+    }    
+        	
+        	/*
+        	Long id = ticketTypeRepository.save(ticketType).getTicketType_ID();
             Link selfLink = linkTo(TicketTypeController.class).slash(id).withSelfRel();
             Link eventTicketsLink = linkTo(methodOn(TicketTypeController.class).getEventTickets(id))
                     .withRel("eventTickets");
@@ -52,19 +63,21 @@ public class TicketTypeController {
         Resource<TicketType> resource = new Resource<TicketType>(ticketType);
         return ResponseEntity.ok(resource);
     }
+    */
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<TicketType> edit(@Valid @RequestBody TicketType newTicketType, @PathVariable Long id) {
-        TicketType ticketType = ticketTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newTicketType.getName() != "") {
+    public ResponseEntity<Resource<TicketType>> edit(@Valid @RequestBody TicketType newTicketType, @PathVariable Long id) {
+        TicketType ticketType = ticketTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (newTicketType.getName() != "" || newTicketType.getName() != ticketType.getName()) {
             ticketType.setName(newTicketType.getName());
         }
         ticketTypeRepository.save(ticketType);
-        return ResponseEntity.created(URI.create("/" + ticketType.getTicketType_ID())).build();
+        Resource<TicketType> resource = new Resource<TicketType>(ticketType);
+        return ResponseEntity.ok(resource);
+        //created(URI.create("/" + ticketType.getTicketType_ID())).build();
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/hal+json")
+    @DeleteMapping(value = "/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         return ticketTypeRepository.findById(id).map(m -> {
             ticketTypeRepository.deleteById(id);
@@ -78,12 +91,14 @@ public class TicketTypeController {
         Link link = linkTo(TicketTypeController.class).withSelfRel();
         if (ticketTypes.size() != 0) {
             for (TicketType ticketType : ticketTypes) {
-                Long id = ticketType.getTicketType_ID();
+                /*Long id = ticketType.getTicketType_ID();
                 Link selfLink = linkTo(TicketTypeController.class).slash(id).withSelfRel();
                 Link eventTicketsLink = linkTo(methodOn(TicketTypeController.class).getEventTickets(id))
                         .withRel("eventTickets");
                 ticketType.add(selfLink);
-                ticketType.add(eventTicketsLink);
+                ticketType.add(eventTicketsLink);*/
+            	TicketTypeLinks ticketTypeLinks = new TicketTypeLinks(ticketType);
+            	ticketType.add(ticketTypeLinks.getAll());
             }
             Resources<TicketType> resources = new Resources<TicketType>(ticketTypes, link);
             return ResponseEntity.ok(resources);
@@ -94,20 +109,20 @@ public class TicketTypeController {
 
     @GetMapping(value = "/{id}", produces = "application/hal+json")
     public ResponseEntity<Resource<TicketType>> one(@PathVariable Long id) {
-        TicketType ticketType = ticketTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        Link selfLink = linkTo(TicketTypeController.class).slash(id).withSelfRel();
+        TicketType ticketType = ticketTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        /*Link selfLink = linkTo(TicketTypeController.class).slash(id).withSelfRel();
         Link eventTicketLink = linkTo(methodOn(TicketTypeController.class).getEventTickets(id)).withRel("eventTicket");
         ticketType.add(selfLink);
-        ticketType.add(eventTicketLink);
+        ticketType.add(eventTicketLink);*/
+        TicketTypeLinks links = new TicketTypeLinks(ticketType);
+        ticketType.add(links.getAll());
         Resource<TicketType> resource = new Resource<TicketType>(ticketType);
         return ResponseEntity.ok(resource);
     }
 
     @GetMapping(value = "/{id}/eventtickets", produces = "application/hal+json")
     public ResponseEntity<Resources<EventTicket>> getEventTickets(@PathVariable Long id) {
-        TicketType ticketType = ticketTypeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        TicketType ticketType = ticketTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         Link link = linkTo(TicketTypeController.class).withSelfRel();
         List<EventTicket> eventTickets = ticketType.getEventTickets();
         if (eventTickets.size() != 0) {
@@ -119,7 +134,7 @@ public class TicketTypeController {
             Resources<EventTicket> resources = new Resources<EventTicket>(eventTickets, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); //Pitäisikö olla .notFound?
         }
     }
 }

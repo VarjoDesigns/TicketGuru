@@ -62,7 +62,7 @@ public class EventController {
     }
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<Event> edit(@Valid @RequestBody Event newEvent, @PathVariable Long id) {
+    ResponseEntity<Resource<Event>> edit(@Valid @RequestBody Event newEvent, @PathVariable Long id) {
         Event event = eRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         if (newEvent.getName() != "") {
             event.setName(newEvent.getName());
@@ -86,7 +86,10 @@ public class EventController {
             event.setAgeLimit(newEvent.getAgeLimit());
         }
         eRepository.save(event);
-        return ResponseEntity.created(URI.create("/api/events/" + event.getEvent_ID())).build();
+        EventLinks eventLinks = new EventLinks(event);
+        event.add(eventLinks.getAll());
+        Resource<Event> resource = new Resource<Event>(event);
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
@@ -109,7 +112,7 @@ public class EventController {
             Resources<Event> resources = new Resources<Event>(events, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -185,7 +188,7 @@ public class EventController {
             Resources<EventTicket> resources = new Resources<EventTicket>(eventTickets, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 }

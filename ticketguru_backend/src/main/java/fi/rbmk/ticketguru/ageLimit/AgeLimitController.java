@@ -1,10 +1,11 @@
 package fi.rbmk.ticketguru.ageLimit;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;

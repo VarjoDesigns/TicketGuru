@@ -8,7 +8,7 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
@@ -32,78 +32,71 @@ import fi.rbmk.ticketguru.user.*;
 public class UserGroupController {
 
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    UserGroupRepository userGroupRepository;
+    UserGroupRepository uGRepository;
 
     @PostMapping(produces = "application/hal+json")
-    ResponseEntity<?> add(@Valid @RequestBody UserGroup userGroup) {
+    public ResponseEntity<?> add(@Valid @RequestBody UserGroup newUserGroup) {
         try {
-            Long id = userGroupRepository.save(userGroup).getUserGroup_ID();
-            Link selfLink = linkTo(UserGroupController.class).slash(id).withSelfRel();
-            Link usersLink = linkTo(methodOn(UserGroupController.class).getUsers(id)).withRel("users");
-            userGroup.add(selfLink);
-            userGroup.add(usersLink);
-        } catch (DataIntegrityViolationException e) {
+            UserGroup userGroup = uGRepository.save(newUserGroup);
+            UserGroupLinks links = new UserGroupLinks(userGroup);
+            userGroup.add(links.getAll());
+            Resource<UserGroup> resource = new Resource<UserGroup>(userGroup);
+            return ResponseEntity.created(URI.create("/api/userGroups/" + userGroup.getUserGroup_ID())).body(resource);
+        } catch (DuplicateKeyException e) {
             return ResponseEntity.badRequest().body("Duplicate entry");
         }
+
+    }
+
+    @PatchMapping(value = "/{id}", produces = "application/hal+json")
+    public ResponseEntity<Resource<UserGroup>> edit(@Valid @RequestBody UserGroup newUserGroup, @PathVariable Long id) {
+        UserGroup userGroup = uGRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (newUserGroup.getName() != "" || newUserGroup.getName() != newUserGroup.getName()) {
+            userGroup.setName(newUserGroup.getName());
+        }
+        uGRepository.save(userGroup);
         Resource<UserGroup> resource = new Resource<UserGroup>(userGroup);
         return ResponseEntity.ok(resource);
     }
 
-    @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<UserGroup> edit(@Valid @RequestBody UserGroup newUserGroup, @PathVariable Long id) {
-        UserGroup userGroup = userGroupRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newUserGroup.getName() != "") {
-            userGroup.setName(newUserGroup.getName());
-        }
-        userGroupRepository.save(userGroup);
-        return ResponseEntity.created(URI.create("/" + userGroup.getUserGroup_ID())).build();
-    }
-
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return userGroupRepository.findById(id).map(m -> {
-            userGroupRepository.deleteById(id);
+        return uGRepository.findById(id).map(m -> {
+            uGRepository.deleteById(id);
             return ResponseEntity.noContent().build();
         }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
     }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<UserGroup>> all() {
-        List<UserGroup> userGroups = userGroupRepository.findAll();
+        List<UserGroup> userGroups = uGRepository.findAll();
         Link link = linkTo(UserGroupController.class).withSelfRel();
         if (userGroups.size() != 0) {
             for (UserGroup userGroup : userGroups) {
-                Long id = userGroup.getUserGroup_ID();
-                Link selfLink = linkTo(UserGroupController.class).slash(id).withSelfRel();
-                Link usersLink = linkTo(methodOn(UserGroupController.class).getUsers(id)).withRel("users");
-                userGroup.add(selfLink);
-                userGroup.add(usersLink);
+                UserGroupLinks links = new UserGroupLinks(userGroup);
+                userGroup.add(links.getAll());
             }
             Resources<UserGroup> resources = new Resources<UserGroup>(userGroups, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping(value = "/{id}", produces = "application/hal+json")
     public ResponseEntity<Resource<UserGroup>> one(@PathVariable Long id) {
-        UserGroup userGroup = userGroupRepository.findById(id)
+        UserGroup userGroup = uGRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        Link selfLink = linkTo(UserGroupController.class).slash(id).withSelfRel();
-        Link usersLink = linkTo(methodOn(UserGroupController.class).getUsers(id)).withRel("users");
-        userGroup.add(selfLink);
-        userGroup.add(usersLink);
+        UserGroupLinks links = new UserGroupLinks(userGroup);
+        userGroup.add(links.getAll());
         Resource<UserGroup> resource = new Resource<UserGroup>(userGroup);
         return ResponseEntity.ok(resource);
     }
 
     @GetMapping(value = "/{id}/users", produces = "application/hal+json")
     public ResponseEntity<Resources<User>> getUsers(@PathVariable Long id) {
-        UserGroup userGroup = userGroupRepository.findById(id)
+        UserGroup userGroup = uGRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         Link link = linkTo(UserGroupController.class).withSelfRel();
         List<User> users = userGroup.getUsers();
@@ -116,7 +109,7 @@ public class UserGroupController {
             Resources<User> resources = new Resources<User>(users, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 }
