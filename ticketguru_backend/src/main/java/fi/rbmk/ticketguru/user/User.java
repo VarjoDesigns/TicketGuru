@@ -39,6 +39,10 @@ public class User extends ResourceSupport {
 
 	@NotEmpty(message = "Username is required")
 	@Length(max = 50)
+	private String username;
+
+	@NotEmpty(message = "Name is required")
+	@Length(max = 50)
 	private String name;
 
 	private boolean active = false;
@@ -57,9 +61,10 @@ public class User extends ResourceSupport {
 	public User(User user) {
 	}
 
-	public User(String name, String password, UserGroup userGroup, boolean active) {
+	public User(String name, String username, String password, UserGroup userGroup, boolean active) {
 		super();
 		this.name = name;
+		this.username = username;
 		this.password = password;
 		this.userGroup = userGroup;
 		this.active = active;
@@ -71,7 +76,11 @@ public class User extends ResourceSupport {
 	}
 
 	public String getName() {
-		return name;
+		return username;
+	}
+
+	public String getUsername() {
+		return username;
 	}
 
 	public String getPassword() {
@@ -93,6 +102,10 @@ public class User extends ResourceSupport {
 	// Setters
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public void setPassword(String password) {

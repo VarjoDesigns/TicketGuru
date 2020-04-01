@@ -1,13 +1,18 @@
 import React from 'react';
 import './App.css';
-import Users from './components/pages/Users';
+import { AuthProvider } from './utils/AuthContext';
+import { BrowserRouter } from 'react-router-dom';
+import Header from './components/Header';
+import PrivateRouter from './components/PrivateRouter';
 
 function App() {
   return (
-    <div className="App">
-      <Users />
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <Header />
+        <PrivateRouter />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
-
 export default App;

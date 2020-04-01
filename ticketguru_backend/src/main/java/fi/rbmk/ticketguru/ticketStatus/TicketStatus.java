@@ -1,5 +1,6 @@
 package fi.rbmk.ticketguru.ticketStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -29,6 +30,9 @@ public class TicketStatus extends ResourceSupport {
 	@Length(max = 50)
 	@Column(name = "name")
 	private String name;
+	
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
 
 	@OneToMany(mappedBy = "ticketStatus")
 	private List<Ticket> tickets;
@@ -52,6 +56,10 @@ public class TicketStatus extends ResourceSupport {
 	public String getName() {
 		return this.name;
 	}
+	
+	public LocalDateTime getInvalid() {
+        return invalid;
+    }
 
 	public List<Ticket> getTickets() {
 		return tickets;
@@ -62,5 +70,9 @@ public class TicketStatus extends ResourceSupport {
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	public void setInvalid() {
+        this.invalid = LocalDateTime.now();
+    }
 
 }

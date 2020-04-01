@@ -1,5 +1,6 @@
 package fi.rbmk.ticketguru.ageLimit;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -33,6 +34,9 @@ public class AgeLimit extends ResourceSupport {
 	@Length(max = 500)
 	@Column(name = "specifier")
 	private String specifier;
+	
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
 
 	@OneToMany(mappedBy = "ageLimit")
 	private List<Event> events;
@@ -65,6 +69,10 @@ public class AgeLimit extends ResourceSupport {
 	public String getSpecifier() {
 		return this.specifier;
 	}
+	
+	public LocalDateTime getInvalid() {
+        return invalid;
+    }
 
 	public List<Event> getEvents() {
 		return events;
@@ -79,6 +87,10 @@ public class AgeLimit extends ResourceSupport {
 	public void setSpecifier(String specifier) {
 		this.specifier = specifier;
 	}
+	
+	public void setInvalid() {
+        this.invalid = LocalDateTime.now();
+    }
 
 	public void setEvents(List<Event> events) {
 		this.events = events;

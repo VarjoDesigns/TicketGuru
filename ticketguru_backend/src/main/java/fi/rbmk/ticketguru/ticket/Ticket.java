@@ -1,11 +1,12 @@
 package fi.rbmk.ticketguru.ticket;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
@@ -17,7 +18,6 @@ import fi.rbmk.ticketguru.ticketStatus.TicketStatus;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 @Table(name = "Tickets")
@@ -36,15 +36,16 @@ public class Ticket extends ResourceSupport {
     @JoinColumn(name = "ticketStatus_ID")
     private TicketStatus ticketStatus;
 
-    @NotEmpty(message = "Ticket checksum is required")
     @Length(max = 200)
     @Column(name = "checkSum")
     private String checkSum;
 
-    @OneToOne(mappedBy = "ticket")
+    @ManyToOne
+    @JoinColumn(name = "saleRow_ID")
     private SaleRow saleRow;
 
-    //private LocalDateTime timestamp;
+    @Column(name = "invalid")
+    private LocalDateTime invalid;
 
     public Ticket() {
     }
@@ -52,32 +53,35 @@ public class Ticket extends ResourceSupport {
     public Ticket(Ticket ticket) {
     }
 
-    public Ticket(EventTicket eventTicket, TicketStatus ticketStatus, String checkSum) {
+    public Ticket(EventTicket eventTicket, String checkSum, SaleRow saleRow) {
         this.eventTicket = eventTicket;
-        this.ticketStatus = ticketStatus;
         this.checkSum = checkSum;
-
+        this.saleRow = saleRow;
     }
 
     // Getters
     public Long getTicket_ID() {
-        return this.ticket_ID;
+        return ticket_ID;
     }
 
     public EventTicket getEventTicket() {
-        return this.eventTicket;
+        return eventTicket;
     }
 
     public TicketStatus getTicketStatus() {
-        return this.ticketStatus;
+        return ticketStatus;
     }
 
     public String getCheckSum() {
-        return this.checkSum;
+        return checkSum;
     }
 
     public SaleRow getSaleRow() {
-        return this.saleRow;
+        return saleRow;
+    }
+
+    public LocalDateTime getInvalid() {
+        return invalid;
     }
 
     // Setters
@@ -89,7 +93,15 @@ public class Ticket extends ResourceSupport {
         this.ticketStatus = ticketStatus;
     }
 
+    public void setSaleRow(SaleRow saleRow) {
+        this.saleRow = saleRow;
+    }
+
     public void setCheckSum(String checkSum) {
         this.checkSum = checkSum;
+    }
+
+    public void setInvalid() {
+        this.invalid = LocalDateTime.now();
     }
 }

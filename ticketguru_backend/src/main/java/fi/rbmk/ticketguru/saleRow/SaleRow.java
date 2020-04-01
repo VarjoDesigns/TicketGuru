@@ -1,19 +1,23 @@
 package fi.rbmk.ticketguru.saleRow;
 
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 
 import fi.rbmk.ticketguru.ticket.Ticket;
 import fi.rbmk.ticketguru.saleEvent.SaleEvent;
@@ -30,24 +34,22 @@ public class SaleRow extends ResourceSupport {
 	@Column(name = "discount")
 	private Long discount; // Pitäisikö olla % vai alennus euroina vai...? Varmaan % olisi paras -Mika
 
-	@NotEmpty(message = "Sale event is required")
+	@NotNull(message = "Sale event is required")
 	@ManyToOne
 	@JoinColumn(name = "saleEvent_ID")
 	private SaleEvent saleEvent;
 
-	@OneToOne
-	@JoinColumn(name = "ticket_ID")
-	private Ticket ticket;
+	@OneToMany(mappedBy = "saleRow")
+	private List<Ticket> tickets;
 
 	public SaleRow() {
 		super();
 	}
 
-	public SaleRow(Long id, SaleEvent saleEvent, Ticket ticket, Long discount) {
+	public SaleRow(Long id, SaleEvent saleEvent, Long discount) {
 		super();
 		this.saleRow_ID = id;
 		this.saleEvent = saleEvent;
-		this.ticket = ticket;
 		this.discount = discount;
 	}
 
@@ -60,8 +62,8 @@ public class SaleRow extends ResourceSupport {
 		return this.saleRow_ID;
 	}
 
-	public Ticket getTicket() {
-		return this.ticket;
+	public List<Ticket> getTickets() {
+		return this.tickets;
 	}
 
 	public Long getDiscount() {
@@ -71,10 +73,6 @@ public class SaleRow extends ResourceSupport {
 	// Setterit
 	public void setSaleEvent(SaleEvent saleEvent) {
 		this.saleEvent = saleEvent;
-	}
-
-	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;
 	}
 
 	public void setDiscount(Long discount) {

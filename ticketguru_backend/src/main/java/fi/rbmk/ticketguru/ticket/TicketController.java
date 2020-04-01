@@ -1,6 +1,5 @@
 package fi.rbmk.ticketguru.ticket;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -8,7 +7,6 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
@@ -19,11 +17,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import fi.rbmk.ticketguru.eventTicket.EventTicket;
+import fi.rbmk.ticketguru.eventTicket.EventTicketLinks;
+import fi.rbmk.ticketguru.eventTicket.EventTicketRepository;
+import fi.rbmk.ticketguru.saleRow.SaleRow;
 import fi.rbmk.ticketguru.ticketStatus.*;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -33,47 +35,25 @@ public class TicketController {
 
     @Autowired
     TicketRepository tRepository;
-    @Autowired
     TicketStatusRepository tSRepository;
-
-    // @PostMapping(produces = "application/hal+json")
-    // ResponseEntity<?> add(@Valid @RequestBody Ticket ticket) {
-    //     try {
-    //         Long id = tRepository.save(ticket).getTicket_ID();
-    //         Link selfLink = linkTo(TicketController.class).slash(id).withSelfRel();
-    //         Link ticketStatusLink = linkTo(methodOn(TicketController.class).getTicketStatus(id))
-    //                 .withRel("ticketStatus");
-    //         ticket.add(selfLink);
-    //         ticket.add(ticketStatusLink);
-    //     } catch (DataIntegrityViolationException e) {
-    //         return ResponseEntity.badRequest().body("Duplicate entry");
-    //     }
-    //     Resource<Ticket> resource = new Resource<Ticket>(ticket);
-    //     return ResponseEntity.ok(resource);
-    // }
+    EventTicketRepository etRepository;
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<Ticket> edit(@Valid @RequestBody Ticket newTicket, @PathVariable Long id) {
         Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newTicket.getEventTicket() != null) {
-            ticket.setEventTicket(newTicket.getEventTicket());
-        }
         if (newTicket.getTicketStatus() != null) {
             ticket.setTicketStatus(newTicket.getTicketStatus());
         }
-        if (newTicket.getCheckSum() != "") {
-            ticket.setCheckSum(newTicket.getCheckSum());
-        }
         tRepository.save(ticket);
-        return ResponseEntity.created(URI.create("/api/tickets/" + ticket.getTicket_ID())).build();
+        return ResponseEntity.ok(ticket);
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return tRepository.findById(id).map(m -> {
-            tRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        ticket.setInvalid();
+        tRepository.save(ticket);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")
@@ -82,12 +62,8 @@ public class TicketController {
         Link link = linkTo(TicketController.class).withSelfRel();
         if (tickets.size() != 0) {
             for (Ticket ticket : tickets) {
-                Long id = ticket.getTicket_ID();
-                Link selfLink = linkTo(TicketController.class).slash(id).withSelfRel();
-                Link ticketStatusLink = linkTo(methodOn(TicketController.class).getTicketStatus(id))
-                        .withRel("ticketStatus");
-                ticket.add(selfLink);
-                ticket.add(ticketStatusLink);
+                TicketLinks ticketLinks = new TicketLinks(ticket);
+                ticket.add(ticketLinks.getAll());
             }
             Resources<Ticket> resources = new Resources<Ticket>(tickets, link);
             return ResponseEntity.ok(resources);
@@ -96,13 +72,20 @@ public class TicketController {
         }
     }
 
-    @GetMapping(value = "/{id}", produces = "application/hal+json")
-    public ResponseEntity<Resource<Ticket>> one(@PathVariable Long id) {
-        Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        Link selfLink = linkTo(TicketController.class).slash(id).withSelfRel();
-        Link ticketStatusLink = linkTo(methodOn(TicketController.class).getTicketStatus(id)).withRel("ticketStatus");
-        ticket.add(selfLink);
-        ticket.add(ticketStatusLink);
+    @GetMapping(value = "/{s}", produces = "application/hal+json")
+    public ResponseEntity<Resource<Ticket>> one(@PathVariable String s) {
+        Ticket ticket = null;
+        try {
+            Long id = Long.parseLong(s);
+            ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        } catch (NumberFormatException e) {
+            ticket = tRepository.findByCheckSum(s);
+            if (ticket == null) {
+                throw new ResourceNotFoundException("Invalid Checksum: " + s);
+            }
+        }
+        TicketLinks ticketLinks = new TicketLinks(ticket);
+        ticket.add(ticketLinks.getAll());
         Resource<Ticket> resource = new Resource<Ticket>(ticket);
         return ResponseEntity.ok(resource);
     }
@@ -111,12 +94,30 @@ public class TicketController {
     ResponseEntity<Resource<TicketStatus>> getTicketStatus(@PathVariable Long id) {
         Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         TicketStatus ticketStatus = ticket.getTicketStatus();
-        Link selfLink = linkTo(methodOn(TicketStatusController.class).one(ticketStatus.getTicketStatus_ID()))
-                .withSelfRel();
-        Link ticketsLink = linkTo(methodOn(TicketStatusController.class).getTickets(id)).withRel("tickets");
-        ticketStatus.add(selfLink);
-        ticketStatus.add(ticketsLink);
+        TicketStatusLinks ticketStatusLinks = new TicketStatusLinks(ticketStatus);
+        ticketStatus.add(ticketStatusLinks.getAll());
         Resource<TicketStatus> resource = new Resource<TicketStatus>(ticketStatus);
         return ResponseEntity.ok(resource);
     }
+
+    @GetMapping(value = "/{id}/eventTicket", produces = "application/hal+json")
+    ResponseEntity<Resource<EventTicket>> getEventTicket(@PathVariable Long id) {
+        Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        EventTicket eventTicket = ticket.getEventTicket();
+        EventTicketLinks eventTicketLinks = new EventTicketLinks(eventTicket);
+        eventTicket.add(eventTicketLinks.getAll());
+        Resource<EventTicket> resource = new Resource<EventTicket>(eventTicket);
+        return ResponseEntity.ok(resource);
+    }
+
+    // @GetMapping(value = "/{id}/saleRow", produces = "application/hal+json")
+    // ResponseEntity<Resource<SaleRow>> getSaleRow(@PathVariable Long id) {
+    // Ticket ticket = tRepository.findById(id).orElseThrow(() -> new
+    // ResourceNotFoundException("Invalid ID: " + id));
+    // SaleRow saleRow = ticket.getSaleRow();
+    // SaleRowLinks saleRowLinks = new saleRowLinks(saleRow);
+    // saleRow.add(saleRowLinks.getAll());
+    // Resource<SaleRow> resource = new Resource<SaleRow>(saleRow);
+    // return ResponseEntity.ok(resource);
+    // }
 }

@@ -8,9 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.hateoas.ResourceSupport;
 
@@ -31,11 +29,11 @@ public class SaleEvent extends ResourceSupport {
 	@Column(name = "saleEvent_ID")
 	private Long saleEvent_ID;
 
-	@NotEmpty(message = "Please enter the date time")
+	@NotNull(message = "Please enter the date time")
 	@Column(name = "dateTime")
 	private LocalDateTime dateTime;
 
-	@NotEmpty(message = "Please enter the user ID")
+	@NotNull(message = "Please enter the user ID")
 	@ManyToOne
 	@JoinColumn(name = "user_ID")
 	private User user;

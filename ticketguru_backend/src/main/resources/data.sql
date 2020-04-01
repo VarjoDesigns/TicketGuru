@@ -19,21 +19,17 @@ VALUES
 -- USERS
 
 INSERT INTO Users
-    (password, name, userGroup_ID, active)
+    (password, username, name, userGroup_ID, active)
 VALUES
-    ('$2a$10$/..0qbQN09s20ZVao53j0..hr2dgkS52zVn68b0ZlGcZBzczkoH.y', 'pepe', 1, 1);
+    ('$2a$10$/..0qbQN09s20ZVao53j0..hr2dgkS52zVn68b0ZlGcZBzczkoH.y', 'pepe', 'pepe', 1, 1);
 INSERT INTO Users
-    (password, name, userGroup_ID, active)
+    (password, username, name, userGroup_ID, active)
 VALUES
-    ('$2a$10$K.vSuwrxuG7arNO7nGkAyuPs0Op4JCDxd7hdhiwpF/egYpePZWYay', 'john', 2, 1);
+    ('$2a$10$K.vSuwrxuG7arNO7nGkAyuPs0Op4JCDxd7hdhiwpF/egYpePZWYay', 'john', 'john', 2, 1);
 INSERT INTO Users
-    (password, name, userGroup_ID, active)
+    (password, username, name, userGroup_ID, active)
 VALUES
-    ('$2a$10$tG3a9iRmIpPH3Hkj/EwLYetL8i/A6jBJIF4OQZS.UPV14sOmQB9Nq', 'kuningas', 3, 1);
-INSERT INTO Users
-    (password, name, userGroup_ID, active)
-VALUES
-    ('keke', 'keke', 1, 0);
+    ('$2a$10$tG3a9iRmIpPH3Hkj/EwLYetL8i/A6jBJIF4OQZS.UPV14sOmQB9Nq', 'kuningas', 'kuningas', 3, 1);
 
 
 -- EVENTTYPES
@@ -129,7 +125,37 @@ VALUES
     (
         'Koodari Kemut 2020', 1, '2020-03-01 20:00:00', 1, 1, 1500, 2, 'Mika koodaa ja muut kattelee. Kannattaa tulla kauempaakin'
     );
-
+    INSERT INTO Events
+    (name, eventType_ID, dateTime, eventOrganizer_ID, venue_ID, ticketCapacity, ageLimit_ID, info)
+VALUES
+    (
+        'Olut festarit', 1, '2020-04-01 09:15:00', 1, 1, 700, 2, 'Paljon erilaisia oluita tarjolla'
+    );
+     INSERT INTO Events
+    (name, eventType_ID, dateTime, eventOrganizer_ID, venue_ID, ticketCapacity, ageLimit_ID, info)
+VALUES
+    (
+        'Black Metal festarit', 1, '2020-04-04 18:30:00', 1, 1, 666, 2, 'Pelkkää bläkkistä. Tiukkaa tykittelyä.'
+    );
+     INSERT INTO Events
+    (name, eventType_ID, dateTime, eventOrganizer_ID, venue_ID, ticketCapacity, ageLimit_ID, info)
+VALUES
+    (
+        'Lappeenranta Kiljufest 2020', 1, '2020-04-13 07:00:00', 1, 1, 15, 2, 'Juo kiljua ja piereskele.'
+    );
+     INSERT INTO Events
+    (name, eventType_ID, dateTime, eventOrganizer_ID, venue_ID, ticketCapacity, ageLimit_ID, info)
+VALUES
+    (
+        'Postimekkijamboree', 1, '2020-04-17 10:00:00', 1, 1, 15, 2, 'Liimaile postimerkkejä'
+    );
+     INSERT INTO Events
+    (name, eventType_ID, dateTime, eventOrganizer_ID, venue_ID, ticketCapacity, ageLimit_ID, info)
+VALUES
+    (
+        'Mökkitikan SM:t', 1, '2020-04-20 09:030:00', 1, 1, 15, 2, 'Heitä tikkaa pikkusievässä'
+    );
+    
 -- TICKETTYPES
 
 INSERT INTO TicketTypes
@@ -168,19 +194,19 @@ VALUES
 
 -- TICKETSTATUSES
 
-INSERT INTO TicketStatuses (name) VALUES ('voimassa');
+INSERT INTO TicketStatuses (name) VALUES ('Voimassa');
 
-INSERT INTO TicketStatuses (name) VALUES ('mitätöity');
+INSERT INTO TicketStatuses (name) VALUES ('Käytetty');
 
-INSERT INTO TicketStatuses (name) VALUES ('peruttu');
+INSERT INTO TicketStatuses (name) VALUES ('Peruttu');
 
-INSERT INTO TicketStatuses (name) VALUES ('maksettu');
+INSERT INTO TicketStatuses (name) VALUES ('Maksettu');
 
-INSERT INTO TicketStatuses (name) VALUES ('hyväksymätön');
+INSERT INTO TicketStatuses (name) VALUES ('Hyväksymätön');
 
-INSERT INTO TicketStatuses (name) VALUES ('epäonnistui');
+INSERT INTO TicketStatuses (name) VALUES ('Epäonnistui');
 
-INSERT INTO TicketStatuses (name) VALUES ('hylätty');
+INSERT INTO TicketStatuses (name) VALUES ('Vylätty');
 
 -- EVENTTICKETS
 
@@ -195,10 +221,22 @@ VALUES
 
 INSERT INTO SaleEvents (dateTime, user_ID) VALUES ('2020-03-03 10:00:00', 3);
 
--- TICKETS / KAATUU SAATANA!!!
+-- SALEROWS
 
-INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID) VALUES ('hbfhbvhfbvrhbgeyfgf', 1, 1);
+INSERT INTO SaleRows (discount, saleEvent_ID) VALUES (0, 1);
 
--- SALEROWS / KAATUU SAATANA!!!
+-- TICKETS
 
-INSERT INTO SaleRows (discount, saleEvent_ID, ticket_ID) VALUES (0, 1, 1 );
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_1', 1, 1, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_2', 1, 1, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_3', 1, 2, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_4', 1, 3, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_5', 1, 4, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_6', 1, 5, 1);
+
+INSERT INTO Tickets (checkSum, eventTicket_ID, ticketStatus_ID, saleRow_ID) VALUES ('Testi_7', 1, 6, 1);
