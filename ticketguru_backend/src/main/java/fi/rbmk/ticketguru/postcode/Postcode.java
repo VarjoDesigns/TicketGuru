@@ -1,5 +1,6 @@
 package fi.rbmk.ticketguru.postcode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +42,12 @@ public class Postcode extends ResourceSupport {
 	@Column(name = "country")
 	private String country;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@OneToMany(mappedBy = "postcode")
 	private List<Venue> venues;
 
@@ -62,44 +69,20 @@ public class Postcode extends ResourceSupport {
 	}
 
 	// Getterit
-
-	public Long getPostcode_ID() {
-		return postcode_ID;
-	}
-
-	public String getPostcode() {
-		return postcode;
-	}
-
-	public String getCity() {
-		return city;
-	}
-
-	public String getCountry() {
-		return country;
-	}
-
-	public List<Venue> getVenues() {
-		return venues;
-	}
-
-	public List<EventOrganizer> getEventOrganizers() {
-		return eventOrganizers;
-	}
+	public Long getPostcode_ID() { return postcode_ID; }
+	public String getPostcode() { return postcode; }
+	public String getCity() { return city; }
+	public String getCountry() { return country; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() {return invalid; }
+	public List<Venue> getVenues() { return venues; }
+	public List<EventOrganizer> getEventOrganizers() { return eventOrganizers; }
 
 	// Setterit
-
-	public void setPostcode(String postcode) {
-		this.postcode = postcode;
-	}
-
-	public void setCity(String city) {
-		this.city = city;
-	}
-
-	public void setCountry(String country) {
-		this.country = country;
-	}
+	public void setPostcode(String postcode) { this.postcode = postcode; }
+	public void setCity(String city) { this.city = city; }
+	public void setCountry(String country) { this.country = country; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 
 	@Override
 	public String toString() {

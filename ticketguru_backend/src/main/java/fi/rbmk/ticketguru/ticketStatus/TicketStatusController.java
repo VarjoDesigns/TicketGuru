@@ -50,18 +50,6 @@ public class TicketStatusController {
         }
     }
 
-    /*
-     * Long id = tSRepository.save(ticketStatus).getTicketStatus_ID(); Link selfLink
-     * = linkTo(TicketStatusController.class).slash(id).withSelfRel(); Link
-     * ticketsLink =
-     * linkTo(methodOn(TicketStatusController.class).getTickets(id)).withRel(
-     * "tickets"); ticketStatus.add(selfLink); ticketStatus.add(ticketsLink); }
-     * catch (DataIntegrityViolationException e) { return
-     * ResponseEntity.badRequest().body("Duplicate entry"); } Resource<TicketStatus>
-     * resource = new Resource<TicketStatus>(ticketStatus); return
-     * ResponseEntity.ok(resource); }
-     */
-
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
     public ResponseEntity<Resource<TicketStatus>> edit(@Valid @RequestBody TicketStatus newTicketStatus,
             @PathVariable Long id) {
@@ -71,17 +59,18 @@ public class TicketStatusController {
             ticketStatus.setName(newTicketStatus.getName());
         }
         tSRepository.save(ticketStatus);
+        TicketStatusLinks links = new TicketStatusLinks(ticketStatus);
+        ticketStatus.add(links.getAll());
         Resource<TicketStatus> resource = new Resource<TicketStatus>(ticketStatus);
         return ResponseEntity.ok(resource);
-        // created(URI.create("/" + ticketStatus.getTicketStatus_ID())).build();
     }
-
-    @DeleteMapping(value = "/{id}")
+    
+    @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return tSRepository.findById(id).map(m -> {
-            tSRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+    	TicketStatus ticketStatus = tSRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+    	ticketStatus.setInvalid();
+    	tSRepository.save(ticketStatus);
+    	return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")
@@ -90,15 +79,8 @@ public class TicketStatusController {
         Link link = linkTo(TicketStatusController.class).withSelfRel();
         if (ticketStatuses.size() != 0) {
             for (TicketStatus ticketStatus : ticketStatuses) {
-                /*
-                 * Long id = ticketStatus.getTicketStatus_ID(); Link selfLink =
-                 * linkTo(TicketStatusController.class).slash(id).withSelfRel(); Link
-                 * ticketsLink =
-                 * linkTo(methodOn(TicketStatusController.class).getTickets(id)).withRel(
-                 * "tickets"); ticketStatus.add(selfLink); ticketStatus.add(ticketsLink);
-                 */
-                TicketStatusLinks ticketStatusLinks = new TicketStatusLinks(ticketStatus);
-                ticketStatus.add(ticketStatusLinks.getAll());
+                TicketStatusLinks links = new TicketStatusLinks(ticketStatus);
+                ticketStatus.add(links.getAll());
             }
             Resources<TicketStatus> resources = new Resources<TicketStatus>(ticketStatuses, link);
             return ResponseEntity.ok(resources);
@@ -111,12 +93,6 @@ public class TicketStatusController {
     public ResponseEntity<Resource<TicketStatus>> one(@PathVariable Long id) {
         TicketStatus ticketStatus = tSRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        /*
-         * Link selfLink = linkTo(TicketStatusController.class).slash(id).withSelfRel();
-         * Link ticketsLink =
-         * linkTo(methodOn(TicketStatusController.class).getTickets(id)).withRel(
-         * "tickets"); ticketStatus.add(selfLink); ticketStatus.add(ticketsLink);
-         */
         TicketStatusLinks links = new TicketStatusLinks(ticketStatus);
         ticketStatus.add(links.getAll());
         Resource<TicketStatus> resource = new Resource<TicketStatus>(ticketStatus);
@@ -131,14 +107,13 @@ public class TicketStatusController {
         List<Ticket> tickets = ticketStatus.getTickets();
         if (tickets.size() != 0) {
             for (Ticket ticket : tickets) {
-                Long ticket_ID = ticket.getTicket_ID();
-                Link selfLink = linkTo(TicketController.class).slash(ticket_ID).withSelfRel();
-                ticket.add(selfLink);
+                TicketLinks links = new TicketLinks(ticket);
+                ticket.add(links.getAll());
             }
             Resources<Ticket> resources = new Resources<Ticket>(tickets, link);
             return ResponseEntity.ok(resources);
         } else {
-            return ResponseEntity.noContent().build(); // Pitäisikö olla .notFound?
+            return ResponseEntity.noContent().build();
         }
     }
 }

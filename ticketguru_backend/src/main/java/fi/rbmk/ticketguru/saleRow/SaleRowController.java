@@ -54,34 +54,14 @@ public class SaleRowController {
             EventTicket eventTicket = etRepository.findById(eT)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + eT));
             tService.generateTickets(saleRow, eventTicket, count);
-            Link selfLink = linkTo(SaleRowController.class).slash(saleRow.getSaleRow_ID()).withSelfRel();
-            Link saleEventLink = linkTo(methodOn(SaleRowController.class).getSaleEvent(saleRow.getSaleRow_ID())).withRel("saleEvent");
-            //Link ticketLink = linkTo(methodOn(SaleRowController.class).getTicket(saleRow.getSaleRow_ID()withRel("ticket");
-            saleRow.add(selfLink);
-            saleRow.add(saleEventLink);
-            //saleRow.add(ticketLink);
+            SaleRowLinks links = new SaleRowLinks(saleRow);
+            saleRow.add(links.getAll());
             Resource<SaleRow> resource = new Resource<SaleRow>(saleRow);
             return ResponseEntity.ok(resource);
         } catch (DataIntegrityViolationException e) { return
             ResponseEntity.badRequest().body("Duplicate entry");
         }
     }
-    // @PostMapping(produces = "application/hal+json")
-    // ResponseEntity<?> add(@Valid @RequestBody SaleRow newSaleRow) {
-    //     try {
-    //         SaleRow saleRow = sRRepository.save(newSaleRow);
-    //         Link selfLink = linkTo(SaleRowController.class).slash(saleRow.getSaleRow_ID()).withSelfRel();
-    //         Link saleEventLink = linkTo(methodOn(SaleRowController.class).getSaleEvent(saleRow.getSaleRow_ID())).withRel("saleEvent");
-    //         //Link ticketLink = linkTo(methodOn(SaleRowController.class).getTicket(saleRow.getSaleRow_ID()withRel("ticket");
-    //         saleRow.add(selfLink);
-    //         saleRow.add(saleEventLink);
-    //         //saleRow.add(ticketLink);
-    //         Resource<SaleRow> resource = new Resource<SaleRow>(saleRow);
-    //         return ResponseEntity.ok(resource);
-    //     } catch (DataIntegrityViolationException e) { return
-    //         ResponseEntity.badRequest().body("Duplicate entry");
-    //     }
-    // }
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<SaleRow> edit(@Valid @RequestBody SaleRow newSaleRow, @PathVariable Long id) {
@@ -99,11 +79,11 @@ public class SaleRowController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return sRRepository.findById(id).map(m -> {
-            sRRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-    }
+    	SaleRow saleRow = sRRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+    	saleRow.setInvalid();
+    	sRRepository.save(saleRow);
+    	return ResponseEntity.noContent().build();
+        }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<SaleRow>> all() {
@@ -111,14 +91,8 @@ public class SaleRowController {
         Link link = linkTo(SaleRowController.class).withSelfRel();
         if (saleRows.size() != 0) {
             for (SaleRow saleRow : saleRows) {
-                Long id = saleRow.getSaleRow_ID();
-                Link selfLink = linkTo(SaleRowController.class).slash(id).withSelfRel();
-                Link saleEventLink = linkTo(methodOn(SaleRowController.class).getSaleEvent(id)).withRel("saleEvent");
-                // Link ticketLink =
-                // linkTo(methodOn(SaleRowController.class).getTickets(id)).withRel("ticket");
-                saleRow.add(selfLink);
-                saleRow.add(saleEventLink);
-                // saleRow.add(ticketLink);
+                SaleRowLinks links = new SaleRowLinks(saleRow);
+                saleRow.add(links.getAll());
             }
             Resources<SaleRow> resources = new Resources<SaleRow>(saleRows, link);
             return ResponseEntity.ok(resources);
@@ -131,13 +105,8 @@ public class SaleRowController {
     public ResponseEntity<Resource<SaleRow>> one(@PathVariable Long id) {
         SaleRow saleRow = sRRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        Link selfLink = linkTo(SaleRowController.class).slash(id).withSelfRel();
-        Link saleEventLink = linkTo(methodOn(SaleRowController.class).getSaleEvent(id)).withRel("saleEvent");
-        // Link ticketLink =
-        // linkTo(methodOn(SaleRowController.class).getTickets(id)).withRel("ticket");
-        saleRow.add(selfLink);
-        saleRow.add(saleEventLink);
-        // saleRow.add(ticketLink);
+        SaleRowLinks links = new SaleRowLinks(saleRow);
+        saleRow.add(links.getAll());
         Resource<SaleRow> resource = new Resource<SaleRow>(saleRow);
         return ResponseEntity.ok(resource);
     }
@@ -147,23 +116,26 @@ public class SaleRowController {
         SaleRow saleRow = sRRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         SaleEvent saleEvent = saleRow.getSaleEvent();
-        Link selfLink = linkTo(methodOn(SaleEventController.class).one(saleEvent.getSaleEvent_ID())).withSelfRel();
-        Link SaleRowsLink = linkTo(methodOn(SaleEventController.class).getSaleEvents(id)).withRel("saleRows");
-        saleEvent.add(selfLink);
-        saleEvent.add(SaleRowsLink);
+        SaleEventLinks links = new SaleEventLinks(saleEvent);
+        saleEvent.add(links.getAll());
         Resource<SaleEvent> resource = new Resource<SaleEvent>(saleEvent);
         return ResponseEntity.ok(resource);
     }
-    /*
-     * @GetMapping(value = "/{id}/tickets", produces = "application/hal+json")
-     * public ResponseEntity<Resources<Ticket>> getSaleRows(@PathVariable Long id) {
-     * SaleRow saleRow = sRRepository.findById(id) .orElseThrow(() -> new
-     * ResourceNotFoundException("Invalid ID: " + id)); Link link =
-     * linkTo(SaleRowController.class).withSelfRel(); Ticket ticket =
-     * saleRow.getTicket();
-     * 
-     * Resources<Ticket> resources = new Resources<Ticket>(ticket, link); return
-     * ResponseEntity.ok(resources); } else { return
-     * ResponseEntity.noContent().build(); } }
-     */
+
+    @GetMapping(value = "/{id}/tickets", produces = "application/hal+json")
+    public ResponseEntity<Resources<Ticket>> getTickets(@PathVariable Long id) {
+        SaleRow saleRow = sRRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        Link link = linkTo(SaleRowController.class).withSelfRel();
+        List<Ticket> tickets = saleRow.getTickets();
+        if (tickets.size() != 0) {
+            for (Ticket ticket : tickets) {
+                TicketLinks links = new TicketLinks(ticket);
+                ticket.add(links.getAll());
+            }
+            Resources<Ticket> resources = new Resources<Ticket>(tickets, link);
+            return ResponseEntity.ok(resources);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }

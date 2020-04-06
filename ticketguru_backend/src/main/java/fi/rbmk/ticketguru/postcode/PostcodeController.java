@@ -59,10 +59,9 @@ public class PostcodeController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return pRepository.findById(id).map(m -> {
-            pRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        Postcode postcode = pRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        postcode.setInvalid();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")
@@ -97,9 +96,8 @@ public class PostcodeController {
         List<EventOrganizer> eventOrganizers = postcode.getEventOrganizers();
         if (eventOrganizers.size() != 0) {
             for (EventOrganizer eventOrganizer : eventOrganizers) {
-                Long eventOrganizer_ID = eventOrganizer.getEventOrganizer_ID();
-                Link selfLink = linkTo(PostcodeController.class).slash(eventOrganizer_ID).withSelfRel();
-                eventOrganizer.add(selfLink);
+                EventOrganizerLinks links = new EventOrganizerLinks(eventOrganizer);
+                eventOrganizer.add(links.getAll());
             }
             Resources<EventOrganizer> resources = new Resources<EventOrganizer>(eventOrganizers, link);
             return ResponseEntity.ok(resources);
@@ -115,9 +113,8 @@ public class PostcodeController {
         List<Venue> venues = postcode.getVenues();
         if (venues.size() != 0) {
             for (Venue venue : venues) {
-                Long venue_ID = venue.getVenue_ID();
-                Link selfLink = linkTo(PostcodeController.class).slash(venue_ID).withSelfRel();
-                venue.add(selfLink);
+                VenueLinks links = new VenueLinks(venue);
+                venue.add(links.getAll());
             }
             Resources<Venue> resources = new Resources<Venue>(venues, link);
             return ResponseEntity.ok(resources);

@@ -35,6 +35,9 @@ public class AgeLimit extends ResourceSupport {
 	@Column(name = "specifier")
 	private String specifier;
 	
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
 
@@ -57,43 +60,17 @@ public class AgeLimit extends ResourceSupport {
 	}
 
 	// Getters
-
-	public Long getAgeLimit_ID() {
-		return this.ageLimit_ID;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public String getSpecifier() {
-		return this.specifier;
-	}
-	
-	public LocalDateTime getInvalid() {
-        return invalid;
-    }
-
-	public List<Event> getEvents() {
-		return events;
-	}
+	public Long getAgeLimit_ID() { return this.ageLimit_ID; }
+	public String getName() { return this.name; }
+	public String getSpecifier() { return this.specifier; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<Event> getEvents() { return events; }
 
 	// Setters
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setSpecifier(String specifier) {
-		this.specifier = specifier;
-	}
-	
-	public void setInvalid() {
-        this.invalid = LocalDateTime.now();
-    }
-
-	public void setEvents(List<Event> events) {
-		this.events = events;
-	}
+	public void setName(String name) { this.name = name; }
+	public void setSpecifier(String specifier) { this.specifier = specifier; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
+	public void setEvents(List<Event> events) { this.events = events; }
 
 }

@@ -33,6 +33,9 @@ public class TicketType extends ResourceSupport {
 	@Column(name = "name")
 	private String name;
 	
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
 
@@ -51,31 +54,14 @@ public class TicketType extends ResourceSupport {
 	}
 
 	// Getters
-
-	public Long getTicketType_ID() {
-		return this.id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-	
-	public LocalDateTime getInvalid() {
-        return invalid;
-    }
-
-	public List<EventTicket> getEventTickets() {
-		return eventTickets;
-	}
+	public Long getTicketType_ID() { return id; }
+	public String getName() { return name; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<EventTicket> getEventTickets() { return eventTickets; }
 
 	// Setters
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setInvalid() {
-        this.invalid = LocalDateTime.now();
-    }
+	public void setName(String name) { this.name = name; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 
 }

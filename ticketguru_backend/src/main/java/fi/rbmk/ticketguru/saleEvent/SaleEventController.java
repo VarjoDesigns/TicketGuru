@@ -41,18 +41,16 @@ public class SaleEventController {
 	SaleRowRepository sRRepository;
 
 	@PostMapping(produces = "application/hal+json")
-	ResponseEntity<?> add(@Valid @RequestBody SaleEvent saleEvent) {
+	ResponseEntity<?> add(@Valid @RequestBody SaleEvent newSaleEvent) {
 		try {
-			Long id = sERepository.save(saleEvent).getSaleEvent_ID();
-			Link selfLink = linkTo(SaleEventController.class).slash(id).withSelfRel();
-			Link userLink = linkTo(methodOn(SaleEventController.class).getUser(id)).withRel("user");
-			saleEvent.add(selfLink);
-			saleEvent.add(userLink);
+			SaleEvent saleEvent = sERepository.save(newSaleEvent);
+			SaleEventLinks links = new SaleEventLinks(saleEvent);
+			saleEvent.add(links.getAll());
+			Resource<SaleEvent> resource = new Resource<SaleEvent>(saleEvent);
+			return ResponseEntity.ok(resource);
 		} catch (DataIntegrityViolationException e) {
 			return ResponseEntity.badRequest().body("Duplicate entry");
 		}
-		Resource<SaleEvent> resource = new Resource<SaleEvent>(saleEvent);
-		return ResponseEntity.ok(resource);
 	}
 
 	@PatchMapping(value = "/{id}", produces = "application/hal+json")
@@ -71,11 +69,11 @@ public class SaleEventController {
 
 	@DeleteMapping(value = "/{id}", produces = "application/hal+json")
 	ResponseEntity<?> delete(@PathVariable Long id) {
-		return sERepository.findById(id).map(m -> {
-			sERepository.deleteById(id);
-			return ResponseEntity.noContent().build();
-		}).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-	}
+		SaleEvent saleEvent = sERepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+		saleEvent.setInvalid();
+		sERepository.save(saleEvent);
+		return ResponseEntity.noContent().build();
+		}
 
 	@GetMapping(produces = "application/hal+json")
 	ResponseEntity<Resources<SaleEvent>> all() {
@@ -83,11 +81,8 @@ public class SaleEventController {
 		Link link = linkTo(SaleEventController.class).withSelfRel();
 		if (users.size() != 0) {
 			for (SaleEvent saleEvent : users) {
-				Long id = saleEvent.getSaleEvent_ID();
-				Link selfLink = linkTo(SaleEventController.class).slash(id).withSelfRel();
-				Link userLink = linkTo(methodOn(SaleEventController.class).getUser(id)).withRel("user");
-				saleEvent.add(selfLink);
-				saleEvent.add(userLink);
+				SaleEventLinks links = new SaleEventLinks(saleEvent);
+				saleEvent.add(links.getAll());
 			}
 			Resources<SaleEvent> resources = new Resources<SaleEvent>(users, link);
 			return ResponseEntity.ok(resources);
@@ -100,10 +95,8 @@ public class SaleEventController {
 	public ResponseEntity<Resource<SaleEvent>> one(@PathVariable Long id) {
 		SaleEvent saleEvent = sERepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-		Link selfLink = linkTo(SaleEventController.class).slash(id).withSelfRel();
-		Link userLink = linkTo(methodOn(SaleEventController.class).getUser(id)).withRel("user");
-		saleEvent.add(selfLink);
-		saleEvent.add(userLink);
+		SaleEventLinks links = new SaleEventLinks(saleEvent);
+		saleEvent.add(links.getAll());
 		Resource<SaleEvent> resource = new Resource<SaleEvent>(saleEvent);
 		return ResponseEntity.ok(resource);
 	}
@@ -120,16 +113,15 @@ public class SaleEventController {
 	}
 
 	@GetMapping(value = "/{id}/saleRows", produces = "application/hal+json")
-	public ResponseEntity<Resources<SaleRow>> getSaleEvents(@PathVariable Long id) {
+	public ResponseEntity<Resources<SaleRow>> getSaleRows(@PathVariable Long id) {
 		SaleEvent saleEvent = sERepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
 		Link link = linkTo(SaleEventController.class).withSelfRel();
 		List<SaleRow> saleRows = saleEvent.getSaleRows();
 		if (saleRows.size() != 0) {
 			for (SaleRow saleRow : saleRows) {
-				Long saleRow_ID = saleRow.getSaleRow_ID();
-				Link selfLink = linkTo(SaleRowController.class).slash(saleRow_ID).withSelfRel();
-				saleRow.add(selfLink);
+				SaleRowLinks links = new SaleRowLinks(saleRow);
+				saleRow.add(links.getAll());
 			}
 			Resources<SaleRow> resources = new Resources<SaleRow>(saleRows, link);
 			return ResponseEntity.ok(resources);

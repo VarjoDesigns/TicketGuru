@@ -50,8 +50,8 @@ public class UserController {
     ResponseEntity<?> add(@Valid @RequestBody User newUser) {
         try {
             User user = uRepository.save(newUser);
-            UserLinks userLinks = new UserLinks(user);
-            user.add(userLinks.getAll());
+            UserLinks links = new UserLinks(user);
+            user.add(links.getAll());
             Resource<User> resource = new Resource<User>(user);
             return ResponseEntity.ok(resource);
         } catch (DataIntegrityViolationException e) {
@@ -81,10 +81,9 @@ public class UserController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return uRepository.findById(id).map(m -> {
-            uRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        User user = uRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        user.setInvalid();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")
@@ -93,8 +92,8 @@ public class UserController {
         Link link = linkTo(UserController.class).withSelfRel();
         if (users.size() != 0) {
             for (User user : users) {
-                UserLinks userLinks = new UserLinks(user);
-                user.add(userLinks.getAll());
+                UserLinks links = new UserLinks(user);
+                user.add(links.getAll());
             }
             Resources<User> resources = new Resources<User>(users, link);
             return ResponseEntity.ok(resources);
@@ -106,8 +105,8 @@ public class UserController {
     @GetMapping(value = "/{id}", produces = "application/hal+json")
     public ResponseEntity<Resource<User>> one(@PathVariable Long id) {
         User user = uRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        UserLinks userLinks = new UserLinks(user);
-        user.add(userLinks.getAll());
+        UserLinks links = new UserLinks(user);
+        user.add(links.getAll());
         Resource<User> resource = new Resource<User>(user);
         return ResponseEntity.ok(resource);
     }
@@ -116,10 +115,8 @@ public class UserController {
     ResponseEntity<Resource<UserGroup>> getUserGroup(@PathVariable Long id) {
         User user = uRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         UserGroup userGroup = user.getUserGroup();
-        Link selfLink = linkTo(methodOn(UserGroupController.class).one(userGroup.getUserGroup_ID())).withSelfRel();
-        Link usersLink = linkTo(methodOn(UserGroupController.class).getUsers(id)).withRel("users");
-        userGroup.add(selfLink);
-        userGroup.add(usersLink);
+        UserGroupLinks links = new UserGroupLinks(userGroup);
+        userGroup.add(links.getAll());
         Resource<UserGroup> resource = new Resource<UserGroup>(userGroup);
         return ResponseEntity.ok(resource);
     }
@@ -131,9 +128,8 @@ public class UserController {
         List<SaleEvent> saleEvents = user.getSaleEvents();
         if (saleEvents.size() != 0) {
             for (SaleEvent saleEvent : saleEvents) {
-                Long saleEvent_ID = saleEvent.getSaleEvent_ID();
-                Link selfLink = linkTo(SaleEventController.class).slash(saleEvent_ID).withSelfRel();
-                saleEvent.add(selfLink);
+                SaleEventLinks links = new SaleEventLinks(saleEvent);
+                saleEvent.add(links.getAll());
             }
             Resources<SaleEvent> resources = new Resources<SaleEvent>(saleEvents, link);
             return ResponseEntity.ok(resources);

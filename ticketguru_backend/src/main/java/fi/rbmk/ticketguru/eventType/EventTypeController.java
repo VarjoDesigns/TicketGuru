@@ -56,10 +56,9 @@ public class EventTypeController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return etRepository.findById(id).map(m -> {
-            etRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        EventType eventType = etRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        eventType.setInvalid();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")

@@ -3,6 +3,7 @@ package fi.rbmk.ticketguru.eventOrganizer;
 import fi.rbmk.ticketguru.event.Event;
 import fi.rbmk.ticketguru.postcode.Postcode;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,6 +35,12 @@ public class EventOrganizer extends ResourceSupport {
 	@JoinColumn(name = "postcode_ID")
 	private Postcode postcode;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "eventOrganizer")
 	private List<Event> events;
 
@@ -57,70 +64,27 @@ public class EventOrganizer extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getEventOrganizer_ID() {
-		return eventOrganizer_ID;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getStreetAddress() {
-		return streetAddress;
-	}
-
-	public String getTel() {
-		return tel;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public String getWWW() {
-		return www;
-	}
-
-	public String getContactPerson() {
-		return contactPerson;
-	}
-
-	public Postcode getPostcode() {
-		return postcode;
-	}
-
-	public List<Event> getEvents() {
-		return events;
-	}
+	public Long getEventOrganizer_ID() { return eventOrganizer_ID; }
+	public String getName() { return name; }
+	public String getStreetAddress() { return streetAddress; }
+	public String getTel() { return tel; }
+	public String getEmail() { return email; }
+	public String getWWW() { return www; }
+	public String getContactPerson() { return contactPerson; }
+	public Postcode getPostcode() { return postcode; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<Event> getEvents() { return events; }
 
 	// Setters
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setStreetAddress(String streetAddress) {
-		this.streetAddress = streetAddress;
-	}
-
-	public void setTel(String tel) {
-		this.tel = tel;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public void setWWW(String www) {
-		this.www = www;
-	}
-
-	public void setContactPerson(String contactPerson) {
-		this.contactPerson = contactPerson;
-	}
-
-	public void setPostcode(Postcode postcode) {
-		this.postcode = postcode;
-	}
+	public void setName(String name) { this.name = name; }
+	public void setStreetAddress(String streetAddress) { this.streetAddress = streetAddress; }
+	public void setTel(String tel) { this.tel = tel; }
+	public void setEmail(String email) { this.email = email; }
+	public void setWWW(String www) { this.www = www; }
+	public void setContactPerson(String contactPerson) { this.contactPerson = contactPerson; }
+	public void setPostcode(Postcode postcode) { this.postcode = postcode; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 
 	@Override
 	public String toString() {

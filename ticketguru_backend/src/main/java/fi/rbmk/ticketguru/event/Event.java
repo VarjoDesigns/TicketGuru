@@ -76,6 +76,12 @@ public class Event extends ResourceSupport {
     @Column(name = "info")
     private String info;
 
+    @Column(name = "valid")
+    private LocalDateTime valid;
+
+    @Column(name = "invalid")
+    private LocalDateTime invalid;
+
     @OneToMany(mappedBy = "event")
     private List<EventTicket> eventTickets;
 
@@ -113,76 +119,27 @@ public class Event extends ResourceSupport {
     }
 
     // Getterit
-    public Long getEvent_ID() {
-        return this.event_ID;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public EventType getEventType() {
-        return this.eventType;
-    }
-
-    public LocalDateTime getDateTime() {
-        return this.dateTime;
-    }
-
-    public EventOrganizer getEventOrganizer() {
-        return this.eventOrganizer;
-    }
-
-    public Venue getVenue() {
-        return this.venue;
-    }
-
-    public Long getTicketCapacity() {
-        return this.ticketCapacity;
-    }
-
-    public AgeLimit getAgeLimit() {
-        return this.ageLimit;
-    }
-
-    public String getInfo() {
-        return this.info;
-    }
-
-    public List<EventTicket> getEventTickets() {
-        return this.eventTickets;
-    }
+    public Long getEvent_ID() { return this.event_ID; }
+    public String getName() { return this.name; }
+    public EventType getEventType() { return this.eventType; }
+    public LocalDateTime getDateTime() { return this.dateTime; }
+    public EventOrganizer getEventOrganizer() { return this.eventOrganizer; }
+    public Venue getVenue() { return this.venue; }
+    public Long getTicketCapacity() { return this.ticketCapacity; }
+    public AgeLimit getAgeLimit() { return this.ageLimit; }
+    public String getInfo() { return this.info; }
+    public LocalDateTime getValid() { return valid; }
+    public LocalDateTime getInvalid() { return invalid; }
+    public List<EventTicket> getEventTickets() { return this.eventTickets; }
 
     // Setterit
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setEventOrganizer(EventOrganizer eventOrganizer) {
-        this.eventOrganizer = eventOrganizer;
-    }
-
-    public void setVenue(Venue venue) {
-        this.venue = venue;
-    }
-
-    public void setTicketCapacity(Long ticketCapacity) {
-        this.ticketCapacity = ticketCapacity;
-    }
-
-    public void setAgeLimit(AgeLimit ageLimit) {
-        this.ageLimit = ageLimit;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
+    public void setName(String name) { this.name = name; }
+    public void setEventType(EventType eventType) { this.eventType = eventType; }
+    public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
+    public void setEventOrganizer(EventOrganizer eventOrganizer) { this.eventOrganizer = eventOrganizer; }
+    public void setVenue(Venue venue) { this.venue = venue; }
+    public void setTicketCapacity(Long ticketCapacity) { this.ticketCapacity = ticketCapacity; }
+    public void setAgeLimit(AgeLimit ageLimit) { this.ageLimit = ageLimit; }
+    public void setInfo(String info) { this.info = info; }
+    public void setInvalid() { this.invalid = LocalDateTime.now(); }
 }

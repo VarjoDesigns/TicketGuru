@@ -1,6 +1,7 @@
 package fi.rbmk.ticketguru.saleRow;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -34,6 +35,12 @@ public class SaleRow extends ResourceSupport {
 	@Column(name = "discount")
 	private Long discount; // Pitäisikö olla % vai alennus euroina vai...? Varmaan % olisi paras -Mika
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@NotNull(message = "Sale event is required")
 	@ManyToOne
 	@JoinColumn(name = "saleEvent_ID")
@@ -54,29 +61,16 @@ public class SaleRow extends ResourceSupport {
 	}
 
 	// Getterit
-	public SaleEvent getSaleEvent() {
-		return this.saleEvent;
-	}
-
-	public Long getSaleRow_ID() {
-		return this.saleRow_ID;
-	}
-
-	public List<Ticket> getTickets() {
-		return this.tickets;
-	}
-
-	public Long getDiscount() {
-		return this.discount;
-	}
+	public Long getSaleRow_ID() { return saleRow_ID; }
+	public Long getDiscount() { return discount; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public SaleEvent getSaleEvent() { return saleEvent; }
+	public List<Ticket> getTickets() { return tickets; }
 
 	// Setterit
-	public void setSaleEvent(SaleEvent saleEvent) {
-		this.saleEvent = saleEvent;
-	}
-
-	public void setDiscount(Long discount) {
-		this.discount = discount;
-	}
+	public void setSaleEvent(SaleEvent saleEvent) { this.saleEvent = saleEvent; }
+	public void setDiscount(Long discount) { this.discount = discount; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 
 }

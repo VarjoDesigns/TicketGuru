@@ -1,5 +1,6 @@
 package fi.rbmk.ticketguru.userGroup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -30,6 +31,12 @@ public class UserGroup extends ResourceSupport {
 	@Length(max = 100)
 	private String name;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
 	private List<User> users;
 
@@ -44,20 +51,13 @@ public class UserGroup extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getUserGroup_ID() {
-		return userGroup_ID;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public List<User> getUsers() {
-		return users;
-	}
+	public Long getUserGroup_ID() { return userGroup_ID; }
+	public String getName() { return name; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<User> getUsers() { return users; }
 
 	// Setters
-	public void setName(String name) {
-		this.name = name;
-	}
+	public void setName(String name) { this.name = name; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 }

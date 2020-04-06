@@ -62,11 +62,11 @@ public class UserGroupController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return uGRepository.findById(id).map(m -> {
-            uGRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-    }
+    	UserGroup userGroup = uGRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+    	userGroup.setInvalid();
+    	uGRepository.save(userGroup);
+    	return ResponseEntity.noContent().build();
+        }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<UserGroup>> all() {
@@ -102,9 +102,8 @@ public class UserGroupController {
         List<User> users = userGroup.getUsers();
         if (users.size() != 0) {
             for (User user : users) {
-                Long user_ID = user.getUser_ID();
-                Link selfLink = linkTo(UserController.class).slash(user_ID).withSelfRel();
-                user.add(selfLink);
+                UserLinks links = new UserLinks(user);
+                user.add(links.getAll());
             }
             Resources<User> resources = new Resources<User>(users, link);
             return ResponseEntity.ok(resources);

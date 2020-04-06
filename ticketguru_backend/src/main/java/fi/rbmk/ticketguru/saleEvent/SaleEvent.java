@@ -33,6 +33,12 @@ public class SaleEvent extends ResourceSupport {
 	@Column(name = "dateTime")
 	private LocalDateTime dateTime;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@NotNull(message = "Please enter the user ID")
 	@ManyToOne
 	@JoinColumn(name = "user_ID")
@@ -53,32 +59,15 @@ public class SaleEvent extends ResourceSupport {
 	}
 
 	// Getterit
-	public Long getSaleEvent_ID() {
-		return this.saleEvent_ID;
-	}
-
-	public Long getSaleRow_ID() {
-		return this.saleEvent_ID;
-	}
-
-	public LocalDateTime getDateTime() {
-		return this.dateTime;
-	}
-
-	public User getUser() {
-		return this.user;
-	}
-
-	public List<SaleRow> getSaleRows() {
-		return this.saleRows;
-	}
+	public Long getSaleEvent_ID() { return this.saleEvent_ID; }
+	public LocalDateTime getDateTime() { return this.dateTime; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<SaleRow> getSaleRows() { return this.saleRows; }
+	public User getUser() { return this.user; }
 
 	// Setterit
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = dateTime;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
+	public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
+	public void setUser(User user) { this.user = user; }
 }

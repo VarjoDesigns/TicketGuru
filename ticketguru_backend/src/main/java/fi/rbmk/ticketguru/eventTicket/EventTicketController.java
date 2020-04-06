@@ -77,10 +77,10 @@ public class EventTicketController {
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
-        return eRepository.findById(id).map(m -> {
-            eRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        EventTicket eventTicket = eTRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        eventTicket.setInvalid();
+        eTRepository.save(eventTicket);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(produces = "application/hal+json")
@@ -112,8 +112,8 @@ public class EventTicketController {
     ResponseEntity<Resource<Event>> getEvent(@PathVariable Long id) {
         EventTicket eventTicket = eTRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         Event event = eventTicket.getEvent();
-        EventLinks eventLinks = new EventLinks(event);
-        event.add(eventLinks.getAll());
+        EventLinks links = new EventLinks(event);
+        event.add(links.getAll());
         Resource<Event> resource = new Resource<Event>(event);
         return ResponseEntity.ok(resource);
     }
@@ -122,10 +122,8 @@ public class EventTicketController {
     ResponseEntity<Resource<TicketType>> getTicketType(@PathVariable Long id) {
         EventTicket eventTicket = eTRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         TicketType ticketType = eventTicket.getTicketType();
-        Link selfLink = linkTo(methodOn(TicketTypeController.class).one(ticketType.getTicketType_ID())).withSelfRel();
-        Link eventTicketsLink = linkTo(methodOn(TicketTypeController.class).getEventTickets(id)).withRel("eventtickets");
-        ticketType.add(selfLink);
-        ticketType.add(eventTicketsLink);
+        TicketTypeLinks links = new TicketTypeLinks(ticketType);
+        ticketType.add(links.getAll());
         Resource<TicketType> resource = new Resource<TicketType>(ticketType);
         return ResponseEntity.ok(resource);
     }

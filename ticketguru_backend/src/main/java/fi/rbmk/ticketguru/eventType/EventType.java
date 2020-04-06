@@ -2,6 +2,7 @@ package fi.rbmk.ticketguru.eventType;
 
 import fi.rbmk.ticketguru.event.Event;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,6 +36,12 @@ public class EventType extends ResourceSupport {
 	@Column(name = "info")
 	private String info;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "eventType")
 	private List<Event> events;
 
@@ -51,30 +58,17 @@ public class EventType extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getEventType_ID() {
-		return eventType_ID;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getInfo() {
-		return info;
-	}
-
-	public List<Event> getEvents() {
-		return events;
-	}
+	public Long getEventType_ID() { return eventType_ID; }
+	public String getName() { return name; }
+	public String getInfo() { return info; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public List<Event> getEvents() { return events; }
 
 	// Setters
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setInfo(String info) {
-		this.info = info;
-	}
+	public void setName(String name) { this.name = name; }
+	public void setInfo(String info) { this.info = info; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 
 	@Override
 	public String toString() {

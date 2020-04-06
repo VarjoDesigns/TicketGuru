@@ -1,5 +1,6 @@
 package fi.rbmk.ticketguru.user;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -45,6 +46,12 @@ public class User extends ResourceSupport {
 	@Length(max = 50)
 	private String name;
 
+	@Column(name = "valid")
+	private LocalDateTime valid;
+
+	@Column(name = "invalid")
+	private LocalDateTime invalid;
+
 	private boolean active = false;
 
 	@ManyToOne
@@ -71,52 +78,21 @@ public class User extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getUser_ID() {
-		return user_ID;
-	}
-
-	public String getName() {
-		return username;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public UserGroup getUserGroup() {
-		return userGroup;
-	}
-
-	public boolean getActive() {
-		return active;
-	}
-
-	public List<SaleEvent> getSaleEvents() {
-		return saleEvents;
-	}
+	public Long getUser_ID() { return user_ID; }
+	public String getName() { return username; }
+	public String getUsername() { return username; }
+	public String getPassword() { return password; }
+	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getInvalid() { return invalid; }
+	public boolean getActive() { return active; }
+	public UserGroup getUserGroup() { return userGroup; }
+	public List<SaleEvent> getSaleEvents() { return saleEvents; }
 
 	// Setters
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public void setUserGroup(UserGroup userGroup) {
-		this.userGroup = userGroup;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+	public void setName(String name) { this.name = name; }
+	public void setUsername(String username) { this.username = username; }
+	public void setPassword(String password) { this.password = password; }
+	public void setUserGroup(UserGroup userGroup) { this.userGroup = userGroup; }
+	public void setActive(boolean active) { this.active = active; }
+	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 }
