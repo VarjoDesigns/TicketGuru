@@ -77,7 +77,7 @@ public class Event extends ResourceSupport {
     private String info;
 
     @Column(name = "valid")
-    private LocalDateTime valid;
+    private LocalDateTime valid = LocalDateTime.now();
 
     @Column(name = "invalid")
     private LocalDateTime invalid;

@@ -47,7 +47,7 @@ public class User extends ResourceSupport {
 	private String name;
 
 	@Column(name = "valid")
-	private LocalDateTime valid;
+	private LocalDateTime valid = LocalDateTime.now();
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;

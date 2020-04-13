@@ -63,7 +63,7 @@ public class Venue extends ResourceSupport {
     private String contactPerson;
 
     @Column(name = "valid")
-    private LocalDateTime valid;
+    private LocalDateTime valid = LocalDateTime.now();
 
     @Column(name = "invalid")
     private LocalDateTime invalid;

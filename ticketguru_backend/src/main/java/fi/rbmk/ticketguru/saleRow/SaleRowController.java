@@ -83,7 +83,7 @@ public class SaleRowController {
     	saleRow.setInvalid();
     	sRRepository.save(saleRow);
     	return ResponseEntity.noContent().build();
-        }
+    }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<SaleRow>> all() {

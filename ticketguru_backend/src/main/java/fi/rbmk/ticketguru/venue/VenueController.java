@@ -73,7 +73,7 @@ public class VenueController {
     	venue.setInvalid();
     	venueRepository.save(venue);
         return ResponseEntity.noContent().build();
-        }
+    }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<Venue>> all() {

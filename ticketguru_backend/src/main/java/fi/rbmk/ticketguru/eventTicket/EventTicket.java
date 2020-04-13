@@ -34,7 +34,7 @@ public class EventTicket extends ResourceSupport {
     private Double price;
 
     @Column(name = "valid")
-    private LocalDateTime valid;
+    private LocalDateTime valid = LocalDateTime.now();
 
     @Column(name = "invalid")
     private LocalDateTime invalid;

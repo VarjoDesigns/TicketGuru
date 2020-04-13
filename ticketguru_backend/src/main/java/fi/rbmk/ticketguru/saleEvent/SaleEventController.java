@@ -73,7 +73,7 @@ public class SaleEventController {
 		saleEvent.setInvalid();
 		sERepository.save(saleEvent);
 		return ResponseEntity.noContent().build();
-		}
+	}
 
 	@GetMapping(produces = "application/hal+json")
 	ResponseEntity<Resources<SaleEvent>> all() {

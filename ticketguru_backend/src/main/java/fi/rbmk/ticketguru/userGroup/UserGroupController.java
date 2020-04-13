@@ -66,7 +66,7 @@ public class UserGroupController {
     	userGroup.setInvalid();
     	uGRepository.save(userGroup);
     	return ResponseEntity.noContent().build();
-        }
+    }
 
     @GetMapping(produces = "application/hal+json")
     ResponseEntity<Resources<UserGroup>> all() {
