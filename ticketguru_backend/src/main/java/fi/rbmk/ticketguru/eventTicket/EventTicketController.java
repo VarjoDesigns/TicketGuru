@@ -2,8 +2,12 @@ package fi.rbmk.ticketguru.eventTicket;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -13,8 +17,8 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,12 +27,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import fi.rbmk.ticketguru.constraintViolationParser.ConstraintViolationParser;
 import fi.rbmk.ticketguru.event.*;
 import fi.rbmk.ticketguru.ticket.*;
 import fi.rbmk.ticketguru.ticketType.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/eventTickets", produces = "application/hal+json")
 public class EventTicketController {
@@ -42,42 +47,69 @@ public class EventTicketController {
     @Autowired
     TicketTypeRepository ttGroupRepository;
 
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     @PostMapping(produces = "application/hal+json")
     ResponseEntity<?> add(@Valid @RequestBody EventTicket newEventTicket) {
         try {
+            if (newEventTicket.getEvent().getInvalid() != null) {
+                return ResponseEntity.badRequest().body("Cannot link Event that is marked as deleted");
+            }
+            if (newEventTicket.getTicketType().getInvalid() != null) {
+                return ResponseEntity.badRequest().body("Cannot link TicketType that is marked as deleted");
+            }
             EventTicket eventTicket = eTRepository.save(newEventTicket);
             EventTicketLinks links = new EventTicketLinks(eventTicket);
             eventTicket.add(links.getAll());
             Resource<EventTicket> resource = new Resource<EventTicket>(eventTicket);
-            return ResponseEntity.ok(resource);
+            return ResponseEntity.created(URI.create(eventTicket.getId().getHref())).body(resource);
         } catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("Duplicate entry");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Duplicate entry");
         }
     }
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<EventTicket> edit(@Valid @RequestBody EventTicket newEventTicket, @PathVariable Long id) {
-        EventTicket eventTicket = eTRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newEventTicket.getEvent() != null) {
+    ResponseEntity<?> edit(@RequestBody EventTicket newEventTicket, @PathVariable Long id) {
+        EventTicket eventTicket = eTRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (eventTicket.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify EventTicket that is marked as deleted");
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(newEventTicket);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
+        }
+        if (newEventTicket.getEvent() != null && newEventTicket.getEvent() != eventTicket.getEvent()) {
+            if (newEventTicket.getEvent().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link Event that is marked as deleted");
+            }
             eventTicket.setEvent(newEventTicket.getEvent());
         }
-        if (newEventTicket.getTicketType() != null) {
+        if (newEventTicket.getTicketType() != null && newEventTicket.getTicketType() != eventTicket.getTicketType()) {
+            if (newEventTicket.getTicketType().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link TicketType that is marked as deleted");
+            }
             eventTicket.setTicketType(newEventTicket.getTicketType());
         }
-        if (newEventTicket.getTicketCount() != null) {
+        if (newEventTicket.getTicketCount() != null && newEventTicket.getTicketCount() != eventTicket.getTicketCount()) {
             eventTicket.setTicketCount(newEventTicket.getTicketCount());
         }
-        if (newEventTicket.getPrice() != null) {
+        if (newEventTicket.getPrice() != null && newEventTicket.getPrice() != eventTicket.getPrice()) {
             eventTicket.setPrice(newEventTicket.getPrice());
         }
         eTRepository.save(eventTicket);
-        return ResponseEntity.created(URI.create("/api/eventTickets/" + eventTicket.getEventTicket_ID())).build();
+        EventTicketLinks links = new EventTicketLinks(eventTicket);
+        eventTicket.add(links.getAll());
+        Resource<EventTicket> resource = new Resource<EventTicket>(eventTicket);
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
         EventTicket eventTicket = eTRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (eventTicket.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify EventTicket that is marked as deleted");
+        }
         eventTicket.setInvalid();
         eTRepository.save(eventTicket);
         return ResponseEntity.noContent().build();

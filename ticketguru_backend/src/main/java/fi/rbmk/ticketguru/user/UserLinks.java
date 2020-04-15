@@ -13,7 +13,7 @@ public class UserLinks {
     private List<Link> linkList;
 
     public UserLinks(User user) {
-        Long id = user.getUser_ID();
+        Long id = user.getUser_id();
         this.selfLink = linkTo(UserController.class).slash(id).withSelfRel();
         this.userGroupLink = linkTo(methodOn(UserController.class).getUserGroup(id)).withRel("userGroup");
         this.saleEventLink = linkTo(methodOn(UserController.class).getSaleEvent(id)).withRel("saleEvent");

@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface TicketRepository extends CrudRepository<Ticket, Long> {
 
-    Ticket findByCheckSum(String checkSum);
+    Ticket findByChecksum(String checksum);
     List<Ticket> findAll();
 
     @Query("select t from Ticket t where t.invalid is null")

@@ -13,7 +13,7 @@ public class EventLinks {
     private List<Link> linkList;
 
     public EventLinks(Event event) {
-        Long id = event.getEvent_ID();
+        Long id = event.getEvent_id();
         this.selfLink = linkTo(EventController.class).slash(id).withSelfRel();
         this.eventTypeLink = linkTo(methodOn(EventController.class).getEventType(id)).withRel("eventType");
         this.eventOrganizerLink = linkTo(methodOn(EventController.class).getEventOrganizer(id)).withRel("eventOrganizer");

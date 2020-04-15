@@ -13,40 +13,42 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 
 @Entity
-@Table(name = "EventTickets")
+@Table(name = "event_tickets")
 public class EventTicket extends ResourceSupport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "eventTicket_ID")
-    private Long id;
+    @Column(name = "event_ticket_id")
+    private Long eventTicket_id;
 
-    @Column(name = "ticketCount")
+    @Column(name = "ticket_count")
     private Long ticketCount;
 
     @Column(name = "price")
     private Double price;
 
-    @Column(name = "valid")
-    private LocalDateTime valid = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDateTime created;
 
     @Column(name = "invalid")
     private LocalDateTime invalid;
 
     @NotNull(message = "Event must be set")
     @ManyToOne
-    @JoinColumn(name = "event_ID")
+    @JoinColumn(name = "event_id")
     private Event event;
 
     @NotNull(message = "Ticket type must be set")
     @ManyToOne
-    @JoinColumn(name = "ticketType_ID")
+    @JoinColumn(name = "ticket_type_id")
     private TicketType ticketType;
 
     public EventTicket() {
@@ -57,16 +59,16 @@ public class EventTicket extends ResourceSupport {
     }
 
     // Getters
-    public Long getEventTicket_ID() { return id; }
+    public Long getEventTicket_ID() { return eventTicket_id; }
     public Long getTicketCount() { return ticketCount; }
     public Double getPrice() { return price; }
-    public LocalDateTime getValid() { return valid; }
+    public LocalDateTime getCreated() { return created; }
     public LocalDateTime getInvalid() { return invalid; }
     public Event getEvent() { return event; }
     public TicketType getTicketType() { return ticketType; }
 
     // Setters
-    public void setEventTicket_ID(Long id) { this.id = id; }
+    public void setEventTicket_ID(Long id) { this.eventTicket_id = id; }
     public void setTicketCount(Long ticketCount) { this.ticketCount = ticketCount; }
     public void setPrice(Double price) { this.price = price; }
     public void setEvent(Event event) { this.event = event; }

@@ -17,6 +17,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -26,15 +28,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-@Table(name = "Events")
+@Table(name = "events")
 public class Event extends ResourceSupport {
 
     @Id // Määritellään kenttä ID:ksi
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Automaattinen juoksenva numerointi. HUOM! Käytetään
-                                                        // GenerationType.IDENTITY spring bootin bugin vuoksi
-    @Column(name = "event_ID") // Tietokannassa olevan kentän nimi
-    private Long event_ID; // Muuttujan nimi, ei välttämättä sama kuin tietokannassa. Tässä tapauksessa id
-                           // jotta automaattisesti generoidut funktiot toimivat
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Automaattinen juoksenva numerointi. HUOM! Käytetään GenerationType.IDENTITY spring bootin bugin vuoksi
+    @Column(name = "event_id") // Tietokannassa olevan kentän nimi
+    private Long event_id; // Muuttujan nimi, ei välttämättä sama kuin tietokannassa. Tässä tapauksessa id jotta automaattisesti generoidut funktiot toimivat
 
     @NotEmpty(message = "Event name is required") // Lisätään pakollisiin kenttiin virheilmoituksen kera
     @Length(max = 250) // Määritellään kaikille kentille jotka sen vaativat maksimipituus
@@ -43,41 +43,40 @@ public class Event extends ResourceSupport {
 
     @NotNull(message = "Event type is required")
     @ManyToOne // Relaatio
-    @JoinColumn(name = "eventType_ID") // Mitä kenttää tietokannassa viitataan
-    private EventType eventType; // Huomatkaa että FK tyyppiset kentät ovat objektityyppi, ei string, long tai
-                                 // int
+    @JoinColumn(name = "event_type_id") // Mitä kenttää tietokannassa viitataan
+    private EventType eventType; // Huomatkaa että FK tyyppiset kentät ovat objektityyppi, ei string, long tai int
 
     @NotNull(message = "Event datetime is required")
-    @Column(name = "dateTime")
+    @Column(name = "datetime")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
-    private LocalDateTime dateTime; // Aikaleimoihin joissa vaaditaan sekä päivä että kellonaika käytetään
-                                    // LocalDateTime tyyppiä
+    private LocalDateTime dateTime; // Aikaleimoihin joissa vaaditaan sekä päivä että kellonaika käytetään LocalDateTime tyyppiä
 
     @NotNull(message = "Event organizer is required")
     @ManyToOne
-    @JoinColumn(name = "eventOrganizer_ID")
+    @JoinColumn(name = "event_organizer_id")
     private EventOrganizer eventOrganizer;
 
-    @NotNull(message = "Event venue is required")
+    @NotNull(message = "Venue is required")
     @ManyToOne
-    @JoinColumn(name = "venue_ID")
+    @JoinColumn(name = "venue_id")
     private Venue venue;
 
-    @NotNull(message = "Event ticket capacity is required")
-    @Column(name = "ticketCapacity")
+    @NotNull(message = "Ticket capacity is required")
+    @Column(name = "ticket_capacity")
     private Long ticketCapacity;
 
     @NotNull(message = "Age limit must be set")
     @ManyToOne
-    @JoinColumn(name = "ageLimit_ID")
+    @JoinColumn(name = "age_limit_id")
     private AgeLimit ageLimit;
 
     @Length(max = 500)
     @Column(name = "info")
     private String info;
 
-    @Column(name = "valid")
-    private LocalDateTime valid = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDateTime created;
 
     @Column(name = "invalid")
     private LocalDateTime invalid;
@@ -119,7 +118,7 @@ public class Event extends ResourceSupport {
     }
 
     // Getterit
-    public Long getEvent_ID() { return this.event_ID; }
+    public Long getEvent_id() { return this.event_id; }
     public String getName() { return this.name; }
     public EventType getEventType() { return this.eventType; }
     public LocalDateTime getDateTime() { return this.dateTime; }
@@ -128,7 +127,7 @@ public class Event extends ResourceSupport {
     public Long getTicketCapacity() { return this.ticketCapacity; }
     public AgeLimit getAgeLimit() { return this.ageLimit; }
     public String getInfo() { return this.info; }
-    public LocalDateTime getValid() { return valid; }
+    public LocalDateTime getCreated() { return created; }
     public LocalDateTime getInvalid() { return invalid; }
     public List<EventTicket> getEventTickets() { return this.eventTickets; }
 

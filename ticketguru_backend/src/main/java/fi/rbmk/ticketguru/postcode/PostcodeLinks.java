@@ -13,7 +13,7 @@ public class PostcodeLinks {
     private List<Link> linkList;
 
     public PostcodeLinks(Postcode postcode) {
-        Long id = postcode.getPostcode_ID();
+        String id = postcode.getPostcode_id();
         this.selfLink = linkTo(PostcodeController.class).slash(id).withSelfRel();
         this.eventOrganizersLink = linkTo(methodOn(PostcodeController.class).getEventOrganizers(id)).withRel("eventOrganizers");
         this.venuesLink = linkTo(methodOn(PostcodeController.class).getVenues(id)).withRel("venues");

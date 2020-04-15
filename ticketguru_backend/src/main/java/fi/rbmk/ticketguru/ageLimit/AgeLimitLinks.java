@@ -13,7 +13,7 @@ public class AgeLimitLinks {
     private List<Link> linkList;
 
     public AgeLimitLinks(AgeLimit ageLimit) {
-        Long id = ageLimit.getAgeLimit_ID();
+        Long id = ageLimit.getAgeLimit_id();
         this.selfLink = linkTo(AgeLimitController.class).slash(id).withSelfRel();
         this.eventsLink = linkTo(methodOn(AgeLimitController.class).getEvents(id)).withRel("events");
         this.linkList = Arrays.asList(selfLink, eventsLink);

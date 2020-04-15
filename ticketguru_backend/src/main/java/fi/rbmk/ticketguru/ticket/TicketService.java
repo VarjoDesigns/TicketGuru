@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
 import fi.rbmk.ticketguru.eventTicket.EventTicket;
@@ -35,26 +34,25 @@ public class TicketService {
     public List<Object> validate(String checksum) {
         List<Object> result = new ArrayList<Object>();
         Ticket ticket = null;
-        ticket = tRepository.findByCheckSum(checksum);
+        ticket = tRepository.findByChecksum(checksum);
         if (ticket == null) {
             throw new ResourceNotFoundException("Invalid Checksum");
         }
         TicketLinks ticketLinks = new TicketLinks(ticket);
         ticket.add(ticketLinks.getAll());
-        Resource<Ticket> resource = new Resource<Ticket>(ticket);
-        if (ticket.getInvalid() != null || ticket.getTicketStatus().getTicketStatus_ID() != 1) {
+        if (ticket.getInvalid() != null && ticket.getTicketStatus().getTicketStatus_id() != 1) {
             if (ticket.getInvalid() != null) {
-                result.add(resource);
+                result.add(ticket);
                 result.add("Ticket has been marked invalid");
                 return result;
             } else {
-                result.add(resource);
+                result.add(ticket);
                 result.add("Invalid ticket status: " + ticket.getTicketStatus().getName());
                 return result;
             }
         }
         ticket.setTicketStatus(tStatusRepository.findById(Integer.toUnsignedLong(2)).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: 1")));
-        result.add(new Resource<Ticket>(tRepository.save(ticket)));
+        result.add(tRepository.save(ticket));
         return result;
     }
 }

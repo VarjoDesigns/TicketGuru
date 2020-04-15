@@ -12,27 +12,29 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.ticket.Ticket;
 
 @Entity
-@Table(name = "TicketStatuses")
+@Table(name = "ticket_statuses")
 public class TicketStatus extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ticketStatus_ID")
-	private Long ticketStatus_ID;
+	@Column(name = "ticket_status_id")
+	private Long ticketStatus_id;
 
 	@NotEmpty(message = "Ticket status is required")
 	@Length(max = 50)
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "valid")
-	private LocalDateTime valid = LocalDateTime.now();
+	@CreationTimestamp
+	@Column(name = "created")
+	private LocalDateTime created;
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
@@ -51,9 +53,9 @@ public class TicketStatus extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getTicketStatus_ID() { return this.ticketStatus_ID; }
+	public Long getTicketStatus_id() { return this.ticketStatus_id; }
 	public String getName() { return this.name; }
-	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getCreated() { return created; }
 	public LocalDateTime getInvalid() { return invalid; }
 	public List<Ticket> getTickets() { return tickets; }
 

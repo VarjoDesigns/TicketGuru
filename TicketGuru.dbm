@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.9.1" last-position="0,0" last-zoom="0.8"
+	 default-schema="public">
+<role name="d9havdvk30dam9">
+</role>
+
+<database name="d9havdvk30dam9" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="user_groups">
+	<schema name="public"/>
+	<position x="60" y="40"/>
+	<column name="user_group_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="user_groups_pk" type="pk-constr" table="public.user_groups">
+		<columns names="user_group_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="users">
+	<schema name="public"/>
+	<position x="560" y="20"/>
+	<column name="user_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="name">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="username" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="user_group_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="active" not-null="true">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="users_pk" type="pk-constr" table="public.users">
+		<columns names="user_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="postcodes">
+	<schema name="public"/>
+	<position x="40" y="440"/>
+	<column name="postcode_id" not-null="true">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="city" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="country" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="postcodes_pk" type="pk-constr" table="public.postcodes">
+		<columns names="postcode_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="event_types">
+	<schema name="public"/>
+	<position x="1260" y="700"/>
+	<column name="event_type_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="info">
+		<type name="varchar" length="500"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="event_types_pk" type="pk-constr" table="public.event_types">
+		<columns names="event_type_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="age_limits">
+	<schema name="public"/>
+	<position x="920" y="700"/>
+	<column name="age_limit_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="info">
+		<type name="varchar" length="500"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="age_limits_pk" type="pk-constr" table="public.age_limits">
+		<columns names="age_limit_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="ticket_statuses">
+	<schema name="public"/>
+	<position x="1660" y="220"/>
+	<column name="ticket_status_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="ticket_statuses_pk" type="pk-constr" table="public.ticket_statuses">
+		<columns names="ticket_status_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="ticket_types">
+	<schema name="public"/>
+	<position x="1600" y="760"/>
+	<column name="ticket_type_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="ticket_types_pk" type="pk-constr" table="public.ticket_types">
+		<columns names="ticket_type_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="event_organizers">
+	<schema name="public"/>
+	<position x="360" y="220"/>
+	<column name="event_organizer_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="street_address">
+		<type name="varchar" length="150"/>
+	</column>
+	<column name="postcode_id" not-null="true">
+		<type name="varchar" length="20"/>
+	</column>
+	<column name="tel">
+		<type name="varchar" length="25"/>
+	</column>
+	<column name="email">
+		<type name="varchar" length="150"/>
+	</column>
+	<column name="www">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="contact_person">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="event_organizers_pk" type="pk-constr" table="public.event_organizers">
+		<columns names="event_organizer_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="venues">
+	<schema name="public"/>
+	<position x="380" y="600"/>
+	<column name="venue_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="street_address" not-null="true">
+		<type name="varchar" length="150"/>
+	</column>
+	<column name="postcode_id" not-null="true">
+		<type name="varchar" length="25"/>
+	</column>
+	<column name="tel" not-null="true">
+		<type name="varchar" length="25"/>
+	</column>
+	<column name="email" not-null="true">
+		<type name="varchar" length="150"/>
+	</column>
+	<column name="www">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="contact_person" not-null="true">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="venues_pk" type="pk-constr" table="public.venues">
+		<columns names="venue_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="events">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="880" y="340"/>
+	<column name="event_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="varchar" length="250"/>
+	</column>
+	<column name="event_type_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="datetime" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="event_organizer_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="venue_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="ticket_capacity" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="age_limit_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="info">
+		<type name="varchar" length="500"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="events_pk" type="pk-constr" table="public.events">
+		<columns names="event_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="event_tickets">
+	<schema name="public"/>
+	<position x="1280" y="480"/>
+	<column name="event_ticket_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="event_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="ticket_type_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="ticket_count">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="price">
+		<type name="decimal" length="5"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="event_tickets_pk" type="pk-constr" table="public.event_tickets">
+		<columns names="event_ticket_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="tickets">
+	<schema name="public"/>
+	<position x="1660" y="480"/>
+	<column name="ticket_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="event_ticket_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="ticket_status_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="checksum" not-null="true">
+		<type name="varchar" length="100"/>
+	</column>
+	<column name="sale_row_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="tickets_pk" type="pk-constr" table="public.tickets">
+		<columns names="ticket_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="sale_events">
+	<schema name="public"/>
+	<position x="1020" y="60"/>
+	<column name="sale_event_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="sale_events_pk" type="pk-constr" table="public.sale_events">
+		<columns names="sale_event_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="sale_rows">
+	<schema name="public"/>
+	<position x="1360" y="120"/>
+	<column name="sale_row_id" not-null="true" identity-type="ALWAYS">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="sale_event_id" not-null="true">
+		<type name="bigint" length="0"/>
+	</column>
+	<column name="discount">
+		<type name="smallint" length="0"/>
+	</column>
+	<column name="created" not-null="true" default-value="NOW()">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="invalid">
+		<type name="timestamp" length="0"/>
+	</column>
+	<constraint name="sale_rows_pk" type="pk-constr" table="public.sale_rows">
+		<columns names="sale_row_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="fk_user_group_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.user_groups" table="public.users">
+	<columns names="user_group_id" ref-type="src-columns"/>
+	<columns names="user_group_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_postcode_ID" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.postcodes" table="public.event_organizers">
+	<columns names="postcode_id" ref-type="src-columns"/>
+	<columns names="postcode_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_postcode_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.postcodes" table="public.venues">
+	<columns names="postcode_id" ref-type="src-columns"/>
+	<columns names="postcode_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_event_type_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.event_types" table="public.events">
+	<columns names="event_type_id" ref-type="src-columns"/>
+	<columns names="event_type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_event_organizer_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.event_organizers" table="public.events">
+	<columns names="event_organizer_id" ref-type="src-columns"/>
+	<columns names="event_organizer_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_venue_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.venues" table="public.events">
+	<columns names="venue_id" ref-type="src-columns"/>
+	<columns names="venue_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_age_limit_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.age_limits" table="public.events">
+	<columns names="age_limit_id" ref-type="src-columns"/>
+	<columns names="age_limit_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_event_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.events" table="public.event_tickets">
+	<columns names="event_id" ref-type="src-columns"/>
+	<columns names="event_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_ticket_type_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.ticket_types" table="public.event_tickets">
+	<columns names="ticket_type_id" ref-type="src-columns"/>
+	<columns names="ticket_type_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_event_ticket_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.event_tickets" table="public.tickets">
+	<columns names="event_ticket_id" ref-type="src-columns"/>
+	<columns names="event_ticket_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_ticket_status_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.ticket_statuses" table="public.tickets">
+	<columns names="ticket_status_id" ref-type="src-columns"/>
+	<columns names="ticket_status_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_sale_row_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.sale_rows" table="public.tickets">
+	<columns names="sale_row_id" ref-type="src-columns"/>
+	<columns names="sale_row_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_user_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.users" table="public.sale_events">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="user_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_sale_event_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="RESTRICT" ref-table="public.sale_events" table="public.sale_rows">
+	<columns names="sale_event_id" ref-type="src-columns"/>
+	<columns names="sale_event_id" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="&quot;rel_Users_UserGroups&quot;" type="relfk"
+	 src-table="public.users"
+	 dst-table="public.user_groups" reference-fk="fk_user_group_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_EventOrganizers_Postcodes&quot;" type="relfk"
+	 src-table="public.event_organizers"
+	 dst-table="public.postcodes" reference-fk="fk_postcode_ID"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Venues_Postcodes&quot;" type="relfk"
+	 src-table="public.venues"
+	 dst-table="public.postcodes" reference-fk="fk_postcode_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Events_EventTypes&quot;" type="relfk"
+	 src-table="public.events"
+	 dst-table="public.event_types" reference-fk="fk_event_type_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Events_EventOrganizers&quot;" type="relfk"
+	 src-table="public.events"
+	 dst-table="public.event_organizers" reference-fk="fk_event_organizer_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Events_Venues&quot;" type="relfk"
+	 src-table="public.events"
+	 dst-table="public.venues" reference-fk="fk_venue_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Events_AgeLimits&quot;" type="relfk"
+	 src-table="public.events"
+	 dst-table="public.age_limits" reference-fk="fk_age_limit_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_EventTickets_Events&quot;" type="relfk"
+	 src-table="public.event_tickets"
+	 dst-table="public.events" reference-fk="fk_event_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_EventTickets_TicketTypes&quot;" type="relfk"
+	 src-table="public.event_tickets"
+	 dst-table="public.ticket_types" reference-fk="fk_ticket_type_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Tickets_EventTickets&quot;" type="relfk"
+	 src-table="public.tickets"
+	 dst-table="public.event_tickets" reference-fk="fk_event_ticket_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Tickets_TicketStatuses&quot;" type="relfk"
+	 src-table="public.tickets"
+	 dst-table="public.ticket_statuses" reference-fk="fk_ticket_status_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_SaleEvents_Users&quot;" type="relfk"
+	 src-table="public.sale_events"
+	 dst-table="public.users" reference-fk="fk_user_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_SaleRows_SaleEvents&quot;" type="relfk"
+	 src-table="public.sale_rows"
+	 dst-table="public.sale_events" reference-fk="fk_sale_event_id"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="&quot;rel_Tickets_SaleRows&quot;" type="relfk"
+	 src-table="public.tickets"
+	 dst-table="public.sale_rows" reference-fk="fk_sale_row_id"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>

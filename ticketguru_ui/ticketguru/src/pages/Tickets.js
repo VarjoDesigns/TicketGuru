@@ -151,7 +151,21 @@ export const Tickets = () => {
       ) : state.hasError ? (
         <span className="error">AN ERROR HAS OCCURED</span>
       ) : (
-        <ReactTable filterable={false} data={state.tickets} columns={columns} />
+        <ReactTable
+          filterable={false}
+          data={state.tickets}
+          columns={columns}
+          SubComponent={row => {
+            return (
+              <div>
+                You can put any component you want here, even another React
+                Table! You even have access to the row-level data if you need!
+                Spark-charts, drill-throughs, infographics... the possibilities
+                are endless!
+              </div>
+            );
+          }}
+        />
       )}
     </div>
   );

@@ -28,7 +28,7 @@ const Unauthorized = () => {
         </p>
       </div>
       <p>
-        <Link to="/">Back to Home</Link>
+        <Link to="/auth">Back to Home</Link>
       </p>
     </div>
   );

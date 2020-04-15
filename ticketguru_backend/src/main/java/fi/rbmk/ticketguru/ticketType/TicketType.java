@@ -14,27 +14,29 @@ import javax.validation.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.eventTicket.EventTicket;
 
 @Entity
-@Table(name = "TicketTypes")
+@Table(name = "ticket_types")
 public class TicketType extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ticketType_ID")
-	private Long id;
+	@Column(name = "ticket_type_id")
+	private Long ticketType_id;
 
-	@NotEmpty(message = "Ticket type is required")
+	@NotEmpty(message = "Ticket type name is required")
 	@Length(max = 100)
 	@Column(name = "name")
 	private String name;
 	
-	@Column(name = "valid")
-	private LocalDateTime valid = LocalDateTime.now();
+	@CreationTimestamp
+	@Column(name = "created")
+	private LocalDateTime created;
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
@@ -54,9 +56,9 @@ public class TicketType extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getTicketType_ID() { return id; }
+	public Long getTicketType_id() { return ticketType_id; }
 	public String getName() { return name; }
-	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getCreated() { return created; }
 	public LocalDateTime getInvalid() { return invalid; }
 	public List<EventTicket> getEventTickets() { return eventTickets; }
 

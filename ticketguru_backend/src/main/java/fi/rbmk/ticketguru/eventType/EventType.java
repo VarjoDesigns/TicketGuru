@@ -14,30 +14,31 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
 @Entity
-@Table(name = "EventTypes")
+@Table(name = "event_types")
 public class EventType extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "eventType_ID")
-	private Long eventType_ID;
+	@Column(name = "event_type_id")
+	private Long eventType_id;
 
 	@NotEmpty(message = "Event type name is required")
 	@Length(max = 100)
 	@Column(name = "name")
 	private String name;
 
-	@NotEmpty(message = "Event info is required")
 	@Length(max = 500)
 	@Column(name = "info")
 	private String info;
 
-	@Column(name = "valid")
-	private LocalDateTime valid = LocalDateTime.now();
+	@CreationTimestamp
+	@Column(name = "created")
+	private LocalDateTime created;
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
@@ -58,10 +59,10 @@ public class EventType extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getEventType_ID() { return eventType_ID; }
+	public Long getEventType_id() { return eventType_id; }
 	public String getName() { return name; }
 	public String getInfo() { return info; }
-	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getCreated() { return created; }
 	public LocalDateTime getInvalid() { return invalid; }
 	public List<Event> getEvents() { return events; }
 
@@ -72,6 +73,6 @@ public class EventType extends ResourceSupport {
 
 	@Override
 	public String toString() {
-		return "EventType[id=" + eventType_ID + ", name=" + name + ", info=" + info + "]";
+		return "EventType[id=" + eventType_id + ", name=" + name + ", info=" + info + "]";
 	}
 }

@@ -13,7 +13,7 @@ public class TicketStatusLinks {
 	private List<Link> linkList;
 	
 	public TicketStatusLinks(TicketStatus ticketStatus) {
-		Long id = ticketStatus.getTicketStatus_ID();
+		Long id = ticketStatus.getTicketStatus_id();
 		this.selfLink = linkTo(TicketStatusController.class).slash(id).withSelfRel();
 		this.ticketsLink = linkTo(methodOn(TicketStatusController.class).getTickets(id)).withRel("tickets");
 		this.linkList = Arrays.asList(selfLink, ticketsLink);

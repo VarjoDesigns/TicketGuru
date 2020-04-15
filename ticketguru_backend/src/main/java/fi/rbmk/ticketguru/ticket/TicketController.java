@@ -1,8 +1,11 @@
 package fi.rbmk.ticketguru.ticket;
 
 import java.util.List;
+import java.util.Set;
 
-import javax.validation.Valid;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -11,8 +14,8 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import fi.rbmk.ticketguru.constraintViolationParser.ConstraintViolationParser;
 import fi.rbmk.ticketguru.eventTicket.EventTicket;
 import fi.rbmk.ticketguru.eventTicket.EventTicketLinks;
 import fi.rbmk.ticketguru.eventTicket.EventTicketRepository;
@@ -28,7 +33,6 @@ import fi.rbmk.ticketguru.saleRow.SaleRow;
 import fi.rbmk.ticketguru.saleRow.SaleRowLinks;
 import fi.rbmk.ticketguru.ticketStatus.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/tickets", produces = "application/hal+json")
 public class TicketController {
@@ -42,10 +46,20 @@ public class TicketController {
     @Autowired
     TicketService tService;
 
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<Resource<Ticket>> edit(@Valid @RequestBody Ticket newTicket, @PathVariable Long id) {
+    ResponseEntity<?> edit(@RequestBody Ticket newTicket, @PathVariable Long id) {
         Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newTicket.getTicketStatus() != null) {
+        if (ticket.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Ticket that is marked as deleted");
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(newTicket);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
+        }
+        if (newTicket.getTicketStatus() != null && newTicket.getTicketStatus() != ticket.getTicketStatus()) {
             ticket.setTicketStatus(newTicket.getTicketStatus());
         }
         tRepository.save(ticket);
@@ -58,6 +72,9 @@ public class TicketController {
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
         Ticket ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (ticket.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Ticket that is marked as deleted");
+        }
         ticket.setInvalid();
         tRepository.save(ticket);
         return ResponseEntity.noContent().build();
@@ -86,7 +103,7 @@ public class TicketController {
             Long id = Long.parseLong(s);
             ticket = tRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         } catch (NumberFormatException e) {
-            ticket = tRepository.findByCheckSum(s);
+            ticket = tRepository.findByChecksum(s);
             if (ticket == null) {
                 throw new ResourceNotFoundException("Invalid Checksum: " + s);
             }
@@ -124,7 +141,7 @@ public class TicketController {
             Resource<Ticket> resource = new Resource<Ticket> ((Ticket) result.get(0));
             return ResponseEntity.badRequest().header("ErrorMsg", result.get(1).toString()).body(resource);
         }
-        Resource<Ticket> resource = new Resource<Ticket> ((Ticket) result.get(0));
+        Resource<Ticket> resource = new Resource<Ticket>((Ticket) result.get(0));
         return ResponseEntity.ok(resource);
     }
 

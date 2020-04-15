@@ -101,7 +101,7 @@ export const Login = () => {
           errorMessage: error.message || error.statusText
         });
       });
-    history.push('/home');
+    history.push('/app/home');
   }
 
   return (

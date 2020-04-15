@@ -13,7 +13,7 @@ public class SaleRowLinks {
     private List<Link> linkList;
 
     public SaleRowLinks(SaleRow saleRow) {
-        Long id = saleRow.getSaleRow_ID();
+        Long id = saleRow.getSaleRow_id();
         this.selfLink = linkTo(SaleRowController.class).slash(id).withSelfRel();
         this.saleEventLink = linkTo(methodOn(SaleRowController.class).getSaleEvent(id)).withRel("saleEvent");
         this.ticketsLink = linkTo(methodOn(SaleRowController.class).getTickets(id)).withRel("tickets");

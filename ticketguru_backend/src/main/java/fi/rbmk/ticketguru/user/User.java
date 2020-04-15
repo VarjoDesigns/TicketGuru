@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -25,38 +26,42 @@ import fi.rbmk.ticketguru.saleEvent.SaleEvent;
 import fi.rbmk.ticketguru.userGroup.UserGroup;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_ID", nullable = false, updatable = false)
-	private Long user_ID;
+	@Column(name = "user_id", nullable = false, updatable = false)
+	private Long user_id;
 
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotEmpty(message = "Password is required")
-	@Length(max = 100)
+	@Length(max = 250)
+	@Column(name = "password")
 	private String password;
 
 	@NotEmpty(message = "Username is required")
 	@Length(max = 50)
+	@Column(name = "username", unique = true)
 	private String username;
 
-	@NotEmpty(message = "Name is required")
-	@Length(max = 50)
+	@Length(max = 100)
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "valid")
-	private LocalDateTime valid = LocalDateTime.now();
+	@CreationTimestamp
+	@Column(name = "created")
+	private LocalDateTime created;
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
 
-	private boolean active = false;
+	@Column(name = "active")
+	private Boolean active = false;
 
 	@ManyToOne
 	@NotNull(message = "User Group is required")
-	@JoinColumn(name = "userGroup_ID")
+	@JoinColumn(name = "user_group_id")
 	private UserGroup userGroup;
 
 	@OneToMany(mappedBy = "user")
@@ -68,7 +73,7 @@ public class User extends ResourceSupport {
 	public User(User user) {
 	}
 
-	public User(String name, String username, String password, UserGroup userGroup, boolean active) {
+	public User(String name, String username, String password, UserGroup userGroup, Boolean active) {
 		super();
 		this.name = name;
 		this.username = username;
@@ -78,13 +83,13 @@ public class User extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getUser_ID() { return user_ID; }
+	public Long getUser_id() { return user_id; }
 	public String getName() { return username; }
 	public String getUsername() { return username; }
 	public String getPassword() { return password; }
-	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getCreated() { return created; }
 	public LocalDateTime getInvalid() { return invalid; }
-	public boolean getActive() { return active; }
+	public Boolean getActive() { return active; }
 	public UserGroup getUserGroup() { return userGroup; }
 	public List<SaleEvent> getSaleEvents() { return saleEvents; }
 
@@ -93,6 +98,6 @@ public class User extends ResourceSupport {
 	public void setUsername(String username) { this.username = username; }
 	public void setPassword(String password) { this.password = password; }
 	public void setUserGroup(UserGroup userGroup) { this.userGroup = userGroup; }
-	public void setActive(boolean active) { this.active = active; }
+	public void setActive(Boolean active) { this.active = active; }
 	public void setInvalid() { this.invalid = LocalDateTime.now(); }
 }

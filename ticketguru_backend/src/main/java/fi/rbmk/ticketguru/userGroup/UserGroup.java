@@ -13,26 +13,28 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
 import fi.rbmk.ticketguru.user.User;
 
 @Entity
-@Table(name = "UserGroups")
+@Table(name = "user_groups")
 public class UserGroup extends ResourceSupport {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "userGroup_ID")
-	private Long userGroup_ID;
+	@Column(name = "user_group_id")
+	private Long userGroup_id;
 
 	@NotEmpty(message = "User group name is required")
 	@Length(max = 100)
 	private String name;
 
-	@Column(name = "valid")
-	private LocalDateTime valid = LocalDateTime.now();
+	@CreationTimestamp
+	@Column(name = "created")
+	private LocalDateTime created;
 
 	@Column(name = "invalid")
 	private LocalDateTime invalid;
@@ -51,9 +53,9 @@ public class UserGroup extends ResourceSupport {
 	}
 
 	// Getters
-	public Long getUserGroup_ID() { return userGroup_ID; }
+	public Long getUserGroup_id() { return userGroup_id; }
 	public String getName() { return name; }
-	public LocalDateTime getValid() { return valid; }
+	public LocalDateTime getCreated() { return created; }
 	public LocalDateTime getInvalid() { return invalid; }
 	public List<User> getUsers() { return users; }
 

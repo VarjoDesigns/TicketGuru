@@ -1,8 +1,13 @@
 package fi.rbmk.ticketguru.event;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
 
@@ -12,8 +17,8 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,14 +27,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import fi.rbmk.ticketguru.eventType.*;
 import fi.rbmk.ticketguru.eventOrganizer.*;
 import fi.rbmk.ticketguru.eventTicket.*;
 import fi.rbmk.ticketguru.venue.*;
 import fi.rbmk.ticketguru.ageLimit.*;
+import fi.rbmk.ticketguru.constraintViolationParser.ConstraintViolationParser;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/events", produces = "application/hal+json")
 public class EventController {
@@ -47,42 +53,79 @@ public class EventController {
     @Autowired
     EventTicketRepository eventTicketRepository;
 
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     @PostMapping(produces = "application/hal+json")
     ResponseEntity<?> add(@Valid @RequestBody Event newEvent) {
         try {
+            if (newEvent.getAgeLimit().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link AgeLimit that is marked as deleted");
+            }
+            if (newEvent.getEventType().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link EventType that is marked as deleted");
+            }
+            if (newEvent.getEventOrganizer().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link EventOrganizer that is marked as deleted");
+            }
+            if (newEvent.getVenue().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link Venue that is marked as deleted");
+            }
             Event event = eRepository.save(newEvent);
             EventLinks links = new EventLinks(event);
             event.add(links.getAll());
             Resource<Event> resource = new Resource<Event>(event);
-            return ResponseEntity.ok(resource);
+            return ResponseEntity.created(URI.create(event.getId().getHref())).body(resource);
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.badRequest().body("Duplicate entry");
         }
     }
 
     @PatchMapping(value = "/{id}", produces = "application/hal+json")
-    ResponseEntity<Resource<Event>> edit(@Valid @RequestBody Event newEvent, @PathVariable Long id) {
+    ResponseEntity<?> edit(@RequestBody Event newEvent, @PathVariable Long id) {
         Event event = eRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
-        if (newEvent.getName() != "") {
+        if (event.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Event that is marked as deleted");
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(newEvent);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
+        }
+        if (newEvent.getName() != null && newEvent.getName() != event.getName()) {
             event.setName(newEvent.getName());
         }
-        if (newEvent.getEventType() != null) {
+        if (newEvent.getEventType() != null && newEvent.getEventType() != event.getEventType()) {
+            if (newEvent.getEventType().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link EventType that is marked as deleted");
+            }
             event.setEventType(newEvent.getEventType());
         }
-        if (newEvent.getDateTime() != null) {
+        if (newEvent.getDateTime() != null && newEvent.getDateTime() != event.getDateTime()) {
             event.setDateTime(newEvent.getDateTime());
         }
-        if (newEvent.getEventOrganizer() != null) {
+        if (newEvent.getEventOrganizer() != null && newEvent.getEventOrganizer() != event.getEventOrganizer()) {
+            if (newEvent.getEventOrganizer().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link EventOrganizer that is marked as deleted");
+            }
             event.setEventOrganizer(newEvent.getEventOrganizer());
         }
-        if (newEvent.getVenue() != null) {
+        if (newEvent.getVenue() != null && newEvent.getVenue() != event.getVenue()) {
+            if (newEvent.getVenue().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link Venue that is marked as deleted");
+            }
             event.setVenue(newEvent.getVenue());
         }
-        if (newEvent.getTicketCapacity() != null) {
+        if (newEvent.getTicketCapacity() != null && newEvent.getTicketCapacity() != event.getTicketCapacity()) {
             event.setTicketCapacity(newEvent.getTicketCapacity());
         }
-        if (newEvent.getAgeLimit() != null) {
+        if (newEvent.getAgeLimit() != null && newEvent.getAgeLimit() != event.getAgeLimit()) {
+            if (newEvent.getAgeLimit().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot link AgeLimit that is marked as deleted");
+            }
             event.setAgeLimit(newEvent.getAgeLimit());
+        }
+        if (newEvent.getInfo() != null && newEvent.getInfo() != event.getInfo()) {
+            event.setInfo(newEvent.getInfo());
         }
         eRepository.save(event);
         EventLinks links = new EventLinks(event);
@@ -94,6 +137,9 @@ public class EventController {
     @DeleteMapping(value = "/{id}", produces = "application/hal+json")
     ResponseEntity<?> delete(@PathVariable Long id) {
         Event event = eRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
+        if (event.getInvalid() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Event that is marked as deleted");
+        }
         event.setInvalid();
         eRepository.save(event);
         return ResponseEntity.noContent().build();
@@ -116,7 +162,7 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/hal+json")
-    public ResponseEntity<Resource<Event>> one(@PathVariable Long id) {
+    ResponseEntity<Resource<Event>> one(@PathVariable Long id) {
         Event event = eRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         EventLinks links = new EventLinks(event);
         event.add(links.getAll());
@@ -165,7 +211,7 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}/eventTickets", produces = "application/hal+json")
-    public ResponseEntity<Resources<EventTicket>> getEventTickets(@PathVariable Long id) {
+    ResponseEntity<?> getEventTickets(@PathVariable Long id) {
         Event event = eRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: " + id));
         Link link = linkTo(EventController.class).withSelfRel();
         List<EventTicket> eventTickets = event.getEventTickets();

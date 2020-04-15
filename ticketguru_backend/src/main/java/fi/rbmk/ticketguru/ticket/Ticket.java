@@ -9,7 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -22,32 +24,35 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-@Table(name = "Tickets")
+@Table(name = "tickets")
 public class Ticket extends ResourceSupport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ticket_ID")
-    private Long ticket_ID;
+    @Column(name = "ticket_id")
+    private Long ticket_id;
 
+    @NotNull(message = "EventTicket is required")
     @ManyToOne
-    @JoinColumn(name = "eventTicket_ID")
+    @JoinColumn(name = "event_ticket_id")
     private EventTicket eventTicket;
 
+    @NotNull(message = "TicketStatus is required")
     @ManyToOne
-    @JoinColumn(name = "ticketStatus_ID")
+    @JoinColumn(name = "ticket_status_id")
     private TicketStatus ticketStatus;
 
-    @Length(max = 200)
-    @Column(name = "checkSum", unique = true)
-    private String checkSum;
+    @Length(max = 100)
+    @Column(name = "checksum", unique = true)
+    private String checksum;
 
     @ManyToOne
-    @JoinColumn(name = "saleRow_ID")
+    @JoinColumn(name = "sale_row_id")
     private SaleRow saleRow;
 
-    @Column(name = "valid")
-    private LocalDateTime valid = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDateTime created;
 
     @Column(name = "invalid")
     private LocalDateTime invalid;
@@ -61,23 +66,23 @@ public class Ticket extends ResourceSupport {
     public Ticket(EventTicket eventTicket, SaleRow saleRow) {
         SecureRandom random = new SecureRandom();
         this.eventTicket = eventTicket;
-        this.checkSum = new BigInteger(128, random).toString(32);
+        this.checksum = new BigInteger(128, random).toString(32);
         this.saleRow = saleRow;
     }
 
     // Getters
-    public Long getTicket_ID() { return ticket_ID; }
+    public Long getTicket_id() { return ticket_id; }
     public EventTicket getEventTicket() { return eventTicket; }
     public TicketStatus getTicketStatus() { return ticketStatus; }
-    public String getCheckSum() { return checkSum; }
+    public String getChecksum() { return checksum; }
     public SaleRow getSaleRow() { return saleRow; }
-    public LocalDateTime getValid() { return valid; }
+    public LocalDateTime getCreated() { return created; }
     public LocalDateTime getInvalid() { return invalid; }
 
     // Setters
     public void setEventTicket(EventTicket eventTicket) { this.eventTicket = eventTicket; }
     public void setTicketStatus(TicketStatus ticketStatus) { this.ticketStatus = ticketStatus; }
     public void setSaleRow(SaleRow saleRow) { this.saleRow = saleRow; }
-    public void setCheckSum(String checkSum) { this.checkSum = checkSum; }
+    public void setChecksum(String checksum) { this.checksum = checksum; }
     public void setInvalid() { this.invalid = LocalDateTime.now(); }
 }

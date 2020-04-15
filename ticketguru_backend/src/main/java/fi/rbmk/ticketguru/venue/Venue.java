@@ -11,7 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.hateoas.ResourceSupport;
 
@@ -21,13 +23,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-@Table(name = "Venues")
+@Table(name = "venues")
 public class Venue extends ResourceSupport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "venue_ID")
-    private Long venue_ID;
+    @Column(name = "venue_id")
+    private Long venue_id;
 
     @NotEmpty(message = "Venue name is required")
     @Length(max = 100)
@@ -36,11 +38,12 @@ public class Venue extends ResourceSupport {
 
     @NotEmpty(message = "Venue address is required")
     @Length(max = 150)
-    @Column(name = "streetAddress")
+    @Column(name = "street_address")
     private String address;
 
+    @NotNull(message = "Postcode is required")
     @ManyToOne
-    @JoinColumn(name = "postcode_ID")
+    @JoinColumn(name = "postcode_id")
     private Postcode postcode;
 
     @NotEmpty(message = "Venue phone number is required")
@@ -59,11 +62,12 @@ public class Venue extends ResourceSupport {
 
     @NotEmpty(message = "Venue contact person is required")
     @Length(max = 150)
-    @Column(name = "contactPerson")
+    @Column(name = "contact_person")
     private String contactPerson;
 
-    @Column(name = "valid")
-    private LocalDateTime valid = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created")
+    private LocalDateTime created;
 
     @Column(name = "invalid")
     private LocalDateTime invalid;
@@ -97,7 +101,7 @@ public class Venue extends ResourceSupport {
     }
 
     // Getters
-    public Long getVenue_ID() { return this.venue_ID; }
+    public Long getVenue_id() { return this.venue_id; }
     public String getName() { return this.name; }
     public String getAddress() { return this.address; }
     public Postcode getPostcode() { return this.postcode; }
@@ -105,7 +109,7 @@ public class Venue extends ResourceSupport {
     public String getEmail() { return this.email; }
     public String getWWW() { return this.www; }
     public String getContactPerson() { return this.contactPerson; }
-    public LocalDateTime getValid() { return valid; }
+    public LocalDateTime getCreated() { return created; }
     public LocalDateTime getInvalid() { return invalid; }
     public List<Event> getEvents() { return this.events; }
 

@@ -13,7 +13,7 @@ public class VenueLinks {
     private List<Link> linkList;
 
     public VenueLinks(Venue venue) {
-        Long id = venue.getVenue_ID();
+        Long id = venue.getVenue_id();
         this.selfLink = linkTo(VenueController.class).slash(id).withSelfRel();
         this.postcodeLink = linkTo(methodOn(VenueController.class).getPostcode(id)).withRel("postcode");
         this.eventsLink = linkTo(methodOn(VenueController.class).getEvents(id)).withRel("events");
