@@ -6,13 +6,13 @@ Delete a User
 
 **Method** : `DELETE`
 
-**Auth required** : NO
+**Auth required** : YES
 
 **Permissions required** : None
 
 **Data constraints**
 
-Provide the URL of User to be deleted e.g. http://localhost:8080/api/users/4
+Provide the URL of User to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/users/4
 
 
 ## Success Response
@@ -29,7 +29,7 @@ Provide the URL of User to be deleted e.g. http://localhost:8080/api/users/4
 
 ## Error Responses
 
-**Condition** : If {id} is missing.
+**Condition** : If {id} is wrong.
 
 **Code** : `404 Not Found`
 
@@ -42,5 +42,20 @@ Provide the URL of User to be deleted e.g. http://localhost:8080/api/users/4
     "error": "Not Found",
     "message": "Invalid ID: 4",
     "path": "/api/users/4"
+}
+```
+**Condition** : If {id} is missing.
+
+**Code** : `405 Method Not Allowed`
+
+**Content example**
+
+```json
+{
+    "timestamp": "2020-05-04T07:34:28.116+0000",
+    "status": 405,
+    "error": "Method Not Allowed",
+    "message": "Request method 'DELETE' not supported",
+    "path": "/api/users"
 }
 ```

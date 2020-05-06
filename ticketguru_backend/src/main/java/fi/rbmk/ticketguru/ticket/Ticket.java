@@ -70,6 +70,14 @@ public class Ticket extends ResourceSupport {
         this.saleRow = saleRow;
     }
 
+    public Ticket(EventTicket eventTicket, SaleRow saleRow, TicketStatus ticketStatus) {
+        SecureRandom random = new SecureRandom();
+        this.eventTicket = eventTicket;
+        this.checksum = new BigInteger(128, random).toString(32);
+        this.saleRow = saleRow;
+        this.ticketStatus = ticketStatus;
+    }
+
     // Getters
     public Long getTicket_id() { return ticket_id; }
     public EventTicket getEventTicket() { return eventTicket; }

@@ -2,7 +2,7 @@
 
 Create a User.
 
-**URL** : `/api/users/`
+**URL** : `/api/userGroups/`
 
 **Method** : `POST`
 
@@ -12,14 +12,11 @@ Create a User.
 
 **Data constraints**
 
-Provide name of User to be created.
+Provide name of UserGroup to be created.
 
 ```json
 {
-    "username": "[VARCHAR 50 chars max]"
-    "password": "[VARCHAR 100 chars max]"
-    "active": "[Boolean]"
-    "userGroup": "[userGoup href]"
+	 "name": "[VARCHAR 50 chars max]"
 }
 ```
 
@@ -27,10 +24,7 @@ Provide name of User to be created.
 
 ```json
 {
-    "username": "Igor",
-    "password": "UliUli",
-    "active": "true",
-    "userGroup" : "https://rbmk-ticketguru-backend.herokuapp.com/api/userGroups/10"
+	 "name": "SuperUser"
 }
 ```
 
@@ -44,20 +38,15 @@ Provide name of User to be created.
 
 ```json
 {
-  "username": "Igor",
-  "name": "Igor",
-  "created": "2020-05-04T07:58:12.202",
+  "name": "SuperUser",
+  "created": "2020-05-04T08:14:03.072",
   "invalid": null,
-  "active": true,
   "_links": {
     "self": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/userGroups/13"
     },
-    "userGroup": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6/userGroup"
-    },
-    "saleEvent": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6/saleEvents"
+    "users": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/userGroups/13/users"
     }
   }
 }

@@ -37,12 +37,12 @@ public class User extends ResourceSupport {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@NotEmpty(message = "Password is required")
 	@Length(max = 250)
-	@Column(name = "password")
+	@Column(name = "password", nullable = false)
 	private String password;
 
 	@NotEmpty(message = "Username is required")
 	@Length(max = 50)
-	@Column(name = "username", unique = true)
+	@Column(name = "username", unique = true, nullable = false, updatable = false)
 	private String username;
 
 	@Length(max = 100)
@@ -84,7 +84,7 @@ public class User extends ResourceSupport {
 
 	// Getters
 	public Long getUser_id() { return user_id; }
-	public String getName() { return username; }
+	public String getName() { return name; }
 	public String getUsername() { return username; }
 	public String getPassword() { return password; }
 	public LocalDateTime getCreated() { return created; }

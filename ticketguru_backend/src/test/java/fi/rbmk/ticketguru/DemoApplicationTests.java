@@ -1,4 +1,4 @@
-package fi.rbmk.ticketmaster;
+package fi.rbmk.ticketguru;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 class DemoApplicationTests {
 
 	@Test
-	void contextLoads() {
+	public void contextLoads() {
 	}
 
 }

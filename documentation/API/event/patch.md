@@ -2,44 +2,44 @@
 
 Edit an Event.
 
-**URL** : `/api/events/{id}`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}`
 
 **Method** : `PATCH`
 
 **Content-Type** : `application/json`
 
-**Auth required** : NO
+**Auth required** : Yes
 
 **Permissions required** : None
 
 **Data constraints**
 
-Provide id of Event to be modified.
+Provide ID and values to modify.
 
 ```json
 {
-    "name": "[VARCHAR 250 chars max]"
-    "eventType": "[eventType_ID]"
-    "dateTime": "[ISO 8601]"
-    "eventOrganizer": "[eventOrganizer_ID]"
-    "venue": "[venue_ID]"
-    "ticketCapacity": "[INT]"
-    "ageLimit": "[ageLimit_ID]"
-    "info": "[VARCHAR 500 CHARS MAX]"
+    "name": "String 250 chars max",
+    "eventType": "event_type_id",
+    "dateTime": "[ISO 8601]",
+    "eventOrganizer": "event_organizer_id",
+    "venue": "venue_id",
+    "ticketCapacity": "Long",
+    "ageLimit": "age_limit_id",
+    "info": "String 500 chars max"
 }
 ```
 
-**Data example** All required fields must be sent.
+**Data example**
 
 ```json
 {
     "name": "Java on hirveä kieli ja tänään sitä koodataan",
-    "eventType": "http://127.0.0.1:8080/api/eventTypes/1",
+    "eventType": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTypes/1",
     "dateTime": "2020-03-01T20:00:00",
-    "eventOrganizer": "http://127.0.0.1:8080/api/eventOrganizers/1",
-    "venue": "http://127.0.0.1:8080/api/venues/1",
+    "eventOrganizer": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventOrganizers/1",
+    "venue": "https://rbmk-ticketguru-backend.herokuapp.com/api/venues/1",
     "ticketCapacity": 1000,
-    "ageLimit": "http://127.0.0.1:8080/api/ageLimits/1",
+    "ageLimit": "https://rbmk-ticketguru-backend.herokuapp.com/api/ageLimits/1",
     "info": "Muutos"
 }
 ```
@@ -57,25 +57,27 @@ Provide id of Event to be modified.
   "name": "Java on hirveä kieli ja tänään sitä koodataan",
   "dateTime": "2020-03-01T20:00:00",
   "ticketCapacity": 1000,
+  "created": "2020-03-01T20:00:00",
+  "invalid": null,
   "info": "Muutettu",
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/events/2"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2"
     },
     "eventType": {
-      "href": "http://127.0.0.1:8080/api/events/2/eventType"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2/eventType"
     },
     "eventOrganizer": {
-      "href": "http://127.0.0.1:8080/api/events/2/eventOrganizer"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2/eventOrganizer"
     },
     "venue": {
-      "href": "http://127.0.0.1:8080/api/events/2/venue"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2/venue"
     },
     "ageLimit": {
-      "href": "http://127.0.0.1:8080/api/events/2/ageLimit"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2/ageLimit"
     },
     "eventTickets": {
-      "href": "http://127.0.0.1:8080/api/events/2/eventTickets"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/2/eventTickets"
     }
   }
 }
@@ -83,55 +85,120 @@ Provide id of Event to be modified.
 
 ## Error Responses
 
-**Condition** : 
+**Condition** : ID is missing.
 
-**Code** : 
-
-**Headers** : 
-
-**Content** : 
-
-### Or
-
-**Condition** : If fields are missed.
-
-**Code** : `400 BAD REQUEST`
+**Code** : `405 Method not allowed`
 
 **Content example**
 
 ```json
 {
-    "timestamp": "2020-03-12T11:32:57.233+0000",
+    "timestamp": "LocalDateTime",
+    "status": 405,
+    "error": "Method Not Allowed",
+    "message": "Request method 'PATCH' not supported",
+    "path": "/api/events/"
+}
+```
+</br>
+
+**Condition** : Invalid ID.
+
+**Code** : `404 Not Found`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 404,
+    "error": "Not Found",
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}"
+}
+```
+</br>
+
+**Condition** : Event is marked as deleted.
+
+**Code** : `400 Bad Request`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
     "status": 400,
     "error": "Bad Request",
-    "errors": [
-        {
-            "codes": [
-                "NotNull.event.dateTime",
-                "NotNull.dateTime",
-                "NotNull.java.time.LocalDateTime",
-                "NotNull"
-            ],
-            "arguments": [
-                {
-                    "codes": [
-                        "event.dateTime",
-                        "dateTime"
-                    ],
-                    "arguments": null,
-                    "defaultMessage": "dateTime",
-                    "code": "dateTime"
-                }
-            ],
-            "defaultMessage": "Event datetime is required",
-            "objectName": "event",
-            "field": "dateTime",
-            "rejectedValue": null,
-            "bindingFailure": false,
-            "code": "NotNull"
-        }
-    ],
-    "message": "Validation failed for object='event'. Error count: 1",
-    "path": "/api/events/2"
+    "message": "Cannot modify Event that is marked as deleted",
+    "path": "/api/events/{id}"
+}
+```
+</br>
+
+**Condition** : Event type is marked as deleted.
+
+**Code** : `400 Bad Request`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Cannot link EventType that is marked as deleted",
+    "path": "/api/events/{id}"
+}
+```
+</br>
+
+**Condition** : Event organizer is marked as deleted.
+
+**Code** : `400 Bad Request`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Cannot link EventOrganizer that is marked as deleted",
+    "path": "/api/events/{id}"
+}
+```
+</br>
+
+**Condition** : Venue is marked as deleted.
+
+**Code** : `400 Bad Request`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Cannot link Venue that is marked as deleted",
+    "path": "/api/events/{id}"
+}
+```
+</br>
+
+**Condition** : Age limit is marked as deleted.
+
+**Code** : `400 Bad Request`
+
+**Content example**
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 400,
+    "error": "Bad Request",
+    "message": "Cannot link AgeLimit that is marked as deleted",
+    "path": "/api/events/{id}"
 }
 ```

@@ -91,3 +91,38 @@ Esimerkillinen tapahtuman luonti/editointi näkymä.
 ## REST API dokumentaatio
 
 - [REST API](https://github.com/marko-airisto/TicketGuru/tree/master/documentation/API)
+
+## TÄSTÄ ALASPÄIN TEHTÄVÄ!
+
+## Testaus
+
+Tässä kohdin selvitetään, miten ohjelmiston oikea toiminta varmistetaan
+testaamalla projektin aikana: millaisia testauksia tehdään ja missä vaiheessa.
+Testauksen tarkemmat sisällöt ja testisuoritusten tulosten raportit kirjataan
+erillisiin dokumentteihin.
+
+Tänne kirjataan myös lopuksi järjestelmän tunnetut ongelmat, joita ei ole korjattu.
+
+## Asennustiedot
+
+Järjestelmän asennus on syytä dokumentoida kahdesta näkökulmasta:
+
+-   järjestelmän kehitysympäristö: miten järjestelmän kehitysympäristön saisi
+    rakennettua johonkin toiseen koneeseen
+
+-   järjestelmän asentaminen tuotantoympäristöön: miten järjestelmän saisi
+    asennettua johonkin uuteen ympäristöön.
+
+Asennusohjeesta tulisi ainakin käydä ilmi, miten käytettävä tietokanta ja
+käyttäjät tulee ohjelmistoa asentaessa määritellä (käytettävä tietokanta,
+käyttäjätunnus, salasana, tietokannan luonti yms.).
+
+## Käynnistys- ja käyttöohje
+
+Tyypillisesti tässä riittää kertoa ohjelman käynnistykseen tarvittava URL sekä
+mahdolliset kirjautumiseen tarvittavat tunnukset. Jos järjestelmän
+käynnistämiseen tai käyttöön liittyy joitain muita toimenpiteitä tai toimintajärjestykseen liittyviä asioita, nekin kerrotaan tässä yhteydessä.
+
+Usko tai älä, tulet tarvitsemaan tätä itsekin, kun tauon jälkeen palaat
+järjestelmän pariin !
+

@@ -70,19 +70,34 @@ public class SaleRowController {
     @PostMapping(produces = "application/hal+json")
     ResponseEntity<?> add(@RequestBody JsonNode requestBody) {
         try {
-            SaleEvent saleEvent = sERepository.findById(getIdFromUri(requestBody.get("saleEvent").textValue()))
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID"));
-            if (saleEvent.getInvalid() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create SaleRow for SaleEvent that is marked as deleted");
+            SaleEvent saleEvent = null;
+            EventTicket eventTicket = null;
+            if (requestBody.has("saleEvent")) {
+                saleEvent = sERepository.findById(getIdFromUri(requestBody.get("saleEvent").textValue()))
+                    .orElseThrow(() -> new ResourceNotFoundException("Invalid ID"));
+                if (saleEvent.getInvalid() != null) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create SaleRow for SaleEvent that is marked as deleted");
+                }
             }
-            EventTicket eventTicket = etRepository.findById(getIdFromUri(requestBody.get("eventTicket").textValue()))
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid ID"));
-            if (eventTicket.getInvalid() != null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create SaleRow with EventTicket that is marked as deleted");
+            if (requestBody.has("eventTicket")) {
+                eventTicket = etRepository.findById(getIdFromUri(requestBody.get("eventTicket").textValue()))
+                    .orElseThrow(() -> new ResourceNotFoundException("Invalid ID"));
+                if (eventTicket.getInvalid() != null) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create SaleRow with EventTicket that is marked as deleted");
+                }
             }
-            Long discount = requestBody.get("discount").asLong();
-            SaleRow saleRow = sRRepository.save(new SaleRow(saleEvent, discount));
-            tService.generateTickets(saleRow, eventTicket, requestBody.get("count").asLong());
+            Long discount = requestBody.has("discount") ? requestBody.get("discount").asLong() : 0;
+            SaleRow newSaleRow = new SaleRow(saleEvent, discount);
+            Set<ConstraintViolation<Object>> violations = validator.validate(newSaleRow);
+            if (!violations.isEmpty()) {
+                ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+                return ResponseEntity.badRequest().body(constraintViolationParser.parse());
+            }
+            SaleRow saleRow = sRRepository.save(newSaleRow);
+            ResponseEntity<?> response = tService.generateTickets(saleRow, eventTicket, requestBody.get("count").asLong());
+            if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                return response;
+            }
             SaleRowLinks links = new SaleRowLinks(saleRow);
             saleRow.add(links.getAll());
             Resource<SaleRow> resource = new Resource<SaleRow>(saleRow);
@@ -100,16 +115,19 @@ public class SaleRowController {
         if (saleRow.getInvalid() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify SaleRow that is marked as deleted");
         }
-        Set<ConstraintViolation<Object>> violations = validator.validate(newSaleRow);
-        if (!violations.isEmpty()) {
-            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
-            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
-        }
         if (newSaleRow.getSaleEvent() != null && newSaleRow.getSaleEvent() != saleRow.getSaleEvent()) {
+            if (newSaleRow.getSaleEvent().getInvalid() != null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create SaleRow for SaleEvent that is marked as deleted");
+            }
             saleRow.setSaleEvent(newSaleRow.getSaleEvent());
         }
         if (newSaleRow.getDiscount() != null && newSaleRow.getDiscount() != saleRow.getDiscount()) {
             saleRow.setDiscount(newSaleRow.getDiscount());
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(saleRow);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
         }
         sRRepository.save(saleRow);
         SaleRowLinks links = new SaleRowLinks(saleRow);

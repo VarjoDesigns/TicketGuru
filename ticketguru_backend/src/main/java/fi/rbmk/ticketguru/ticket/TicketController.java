@@ -54,13 +54,13 @@ public class TicketController {
         if (ticket.getInvalid() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Ticket that is marked as deleted");
         }
-        Set<ConstraintViolation<Object>> violations = validator.validate(newTicket);
+        if (newTicket.getTicketStatus() != ticket.getTicketStatus()) {
+            ticket.setTicketStatus(newTicket.getTicketStatus());
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(ticket);
         if (!violations.isEmpty()) {
             ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
             return ResponseEntity.badRequest().body(constraintViolationParser.parse());
-        }
-        if (newTicket.getTicketStatus() != null && newTicket.getTicketStatus() != ticket.getTicketStatus()) {
-            ticket.setTicketStatus(newTicket.getTicketStatus());
         }
         tRepository.save(ticket);
         TicketLinks links = new TicketLinks(ticket);

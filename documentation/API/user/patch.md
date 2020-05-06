@@ -6,20 +6,19 @@ Edit a User.
 
 **Method** : `PATCH`
 
-**Auth required** : NO
+**Auth required** : YES
 
 **Permissions required** : None
 
 **Data constraints**
 
-**Data example** All fields must be sent.
+**Data example**
 
 ```json
 {
-    "name": "Johnny",
-    "password": "UliUli",
-    "active": "false",
-    "userGroup" : "http://localhost:8080/api/userGroups/2"
+	"name": "Spede",
+    "password": "oujee",
+    "userGroup" : "https://rbmk-ticketguru-backend.herokuapp.com/api/userGroups/10"
 }
 ```
 
@@ -27,58 +26,27 @@ Edit a User.
 
 **Condition** : If everything is OK.
 
-**Code** : `201 Created`
-
-## Error Responses
-
-**Condition** : 
-
-**Code** : 
-
-**Headers** : 
-
-**Content** : 
-
-### Or
-
-**Condition** : If fields are missed.
-
-**Code** : `400 BAD REQUEST`
+**Code** : `200 OK`
 
 **Content example**
 
 ```json
 {
-   "timestamp": "2020-03-12T11:42:45.921+0000",
-    "status": 400,
-    "error": "Bad Request",
-    "errors": [
-        {
-            "codes": [
-                "NotEmpty.user.password",
-                "NotEmpty.password",
-                "NotEmpty.java.lang.String",
-                "NotEmpty"
-            ],
-            "arguments": [
-                {
-                    "codes": [
-                        "user.password",
-                        "password"
-                    ],
-                    "arguments": null,
-                    "defaultMessage": "password",
-                    "code": "password"
-                }
-            ],
-            "defaultMessage": "Password is required",
-            "objectName": "user",
-            "field": "password",
-            "rejectedValue": null,
-            "bindingFailure": false,
-            "code": "NotEmpty"
-        }
-    ],
-    "path": "/api/users/1"
+  "username": "Igor",
+  "name": "Spede",
+  "created": "2020-05-04T07:58:12.202",
+  "invalid": null,
+  "active": false,
+  "_links": {
+    "self": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6"
+    },
+    "userGroup": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6/userGroup"
+    },
+    "saleEvent": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/users/6/saleEvents"
+    }
+  }
 }
 ```

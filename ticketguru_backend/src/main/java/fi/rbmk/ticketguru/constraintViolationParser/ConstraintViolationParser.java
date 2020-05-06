@@ -27,13 +27,15 @@ public class ConstraintViolationParser {
         body.put("status", status.value());
         body.put("error", status.getReasonPhrase());
         for (ConstraintViolation<?> violation : violations) {
-            if (violation.getInvalidValue() != null) {
-                Map<String, String> error = new LinkedHashMap<>();
-                error.put("defaultMessage", violation.getMessage());
-                error.put("field", violation.getPropertyPath().toString());
+            Map<String, String> error = new LinkedHashMap<>();
+            error.put("defaultMessage", violation.getMessage());
+            error.put("field", violation.getPropertyPath().toString());
+            if (violation.getInvalidValue() == null) {
+                error.put("rejectedValue", "null");
+            } else {
                 error.put("rejectedValue", violation.getInvalidValue().toString());
-                errors.add(error);
             }
+            errors.add(error);
         }
         body.put("errors", errors);
         return body;

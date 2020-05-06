@@ -1,8 +1,8 @@
-# Edit a ticket
+# Edit an Event
 
-Edit a Ticket.
+Edit an Event.
 
-**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/{id}`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/saleRows/{id}`
 
 **Method** : `PATCH`
 
@@ -18,7 +18,8 @@ Provide ID and values to modify.
 
 ```json
 {
-    "ticketStatus": "ticket_status_id"
+    "discount": "Long",
+    "saleEvent": "sale_event_id"
 }
 ```
 
@@ -26,7 +27,8 @@ Provide ID and values to modify.
 
 ```json
 {
-    "ticketStatus": "https://rbmk-ticketguru-backend.herokuapp.com/api/ticketStatuses/2"
+  "discount": 10,
+  "saleEvent": "https://rbmk-ticketguru-backend.herokuapp.com/api/saleRows/2"
 }
 ```
 
@@ -40,18 +42,18 @@ Provide ID and values to modify.
 
 ```json
 {
-  "checksum": "65b189ckqlnag8ltmmdv2q39nf",
-  "created": "2020-04-22T10:41:57.924",
+  "discount": 10,
+  "created": "2020-04-22T09:46:15.509",
   "invalid": null,
   "_links": {
     "self": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/20"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/saleRows/2"
     },
-    "eventTicket": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/20/eventTicket"
+    "saleEvent": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/saleRows/2/saleEvent"
     },
-    "ticketStatus": {
-      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/20/ticketStatus"
+    "tickets": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/saleRows/2/tickets"
     }
   }
 }
@@ -71,7 +73,7 @@ Provide ID and values to modify.
     "status": 405,
     "error": "Method Not Allowed",
     "message": "Request method 'PATCH' not supported",
-    "path": "/api/tickets/"
+    "path": "/api/SaleRows/"
 }
 ```
 </br>
@@ -88,12 +90,12 @@ Provide ID and values to modify.
     "status": 404,
     "error": "Not Found",
     "message": "Invalid ID: {id}",
-    "path": "/api/tickets/{id}"
+    "path": "/api/saleRows/{id}"
 }
 ```
 </br>
 
-**Condition** : Ticket is marked as deleted.
+**Condition** : Sale row is marked as deleted.
 
 **Code** : `400 Bad Request`
 
@@ -104,14 +106,13 @@ Provide ID and values to modify.
     "timestamp": "LocalDateTime",
     "status": 400,
     "error": "Bad Request",
-    "message": "Cannot modify Ticket that is marked as deleted",
-    "path": "/api/tickets/{id}"
+    "message": "Cannot modify sale row that is marked as deleted",
+    "path": "/api/saleRows/{id}"
 }
 ```
-
 </br>
 
-**Condition** : Invalid ticket_status_id.
+**Condition** : Sale event is marked as deleted.
 
 **Code** : `400 Bad Request`
 
@@ -122,12 +123,7 @@ Provide ID and values to modify.
     "timestamp": "LocalDateTime",
     "status": 400,
     "error": "Bad Request",
-    "errors": [
-        {
-            "defaultMessage": "TicketStatus is required",
-            "field": "ticketStatus",
-            "rejectedValue": "null"
-        }
-    ]
+    "message": "Cannot create SaleRow for SaleEvent that is marked as deleted",
+    "path": "/api/saleRows/{id}"
 }
 ```

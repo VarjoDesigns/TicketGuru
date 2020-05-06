@@ -2,11 +2,19 @@ package fi.rbmk.ticketguru.ticket;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import fi.rbmk.ticketguru.constraintViolationParser.ConstraintViolationParser;
 import fi.rbmk.ticketguru.eventTicket.EventTicket;
 import fi.rbmk.ticketguru.saleRow.SaleRow;
 import fi.rbmk.ticketguru.ticketStatus.TicketStatus;
@@ -20,15 +28,24 @@ public class TicketService {
     @Autowired
     TicketStatusRepository tStatusRepository;
 
-    public List<Ticket> generateTickets(SaleRow saleRow, EventTicket eventTicket, Long count) {
+    private static Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+    public ResponseEntity<?> generateTickets(SaleRow saleRow, EventTicket eventTicket, Long count) {
         List<Ticket> ticketList = new ArrayList<Ticket>();
         TicketStatus ticketStatus = tStatusRepository.findById(Integer.toUnsignedLong(1)).orElseThrow(() -> new ResourceNotFoundException("Invalid ID: 1"));
+        // Create a test ticket to check that all required values have been passed
+        Ticket tmpTicket = new Ticket(eventTicket, saleRow, ticketStatus);
+        Set<ConstraintViolation<Object>> violations = validator.validate(tmpTicket);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
+        }
+        tmpTicket = null;
         for (int i = 0; i < count; i++) {
-            Ticket ticket = new Ticket(eventTicket, saleRow);
-            ticket.setTicketStatus(ticketStatus);
+            Ticket ticket = new Ticket(eventTicket, saleRow, ticketStatus);
             ticketList.add(tRepository.save(ticket));
         }
-        return ticketList;
+        return ResponseEntity.ok(ticketList);
     }
 
     public List<Object> validate(String checksum) {

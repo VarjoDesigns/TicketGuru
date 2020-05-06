@@ -1,60 +1,54 @@
-# Show All events
+# Get all events
 
-Show all Events the active User can access and with what permission level.
+Get all Events the active User can access with current permission level.
 
-**URL** : `/api/events/`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events`
 
 **Method** : `GET`
 
-**Auth required** : NO
+**Auth required** : Yes
 
 **Permissions required** : None
 
-**Data constraints** : `{}`
+**Data constraints** : `{[]}`
 
-## Success Responses
+## Success Response
 
-**Condition** : User can not see any Events or no events found.
-
-**Code** : `404 NOT FOUND`
-
-**Content** : `{[]}`
-
-### OR
-
-**Condition** : User can see one or more Events.
+**Condition** : Events found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see a list of events, with links to event properties.
+**Content** :
 
 ```json
 {
   "_embedded": {
     "events": [
       {
-        "name": "Koodari Kemut 2020",
-        "dateTime": "2020-03-01T20:00:00",
-        "ticketCapacity": 1500,
-        "info": "Mika koodaa ja muut kattelee. Kannattaa tulla kauempaakin",
+        "name": "String",
+        "dateTime": "LocalDateTime",
+        "ticketCapacity": "Long",
+        "info": "String",
+        "created": "LocalDateTime",
+        "invalid": "LocalDateTime",
         "_links": {
           "self": {
-            "href": "http://127.0.0.1:8080/api/events/1"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}"
           },
           "eventType": {
-            "href": "http://127.0.0.1:8080/api/events/1/eventType"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventType"
           },
           "eventOrganizer": {
-            "href": "http://127.0.0.1:8080/api/events/1/eventOrganizer"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventOrganizer"
           },
           "venue": {
-            "href": "http://127.0.0.1:8080/api/events/1/venue"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/venue"
           },
           "ageLimit": {
-            "href": "http://127.0.0.1:8080/api/events/1/ageLimit"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/ageLimit"
           },
           "eventTickets": {
-            "href": "http://127.0.0.1:8080/api/events/1/eventTickets"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventTickets"
           }
         }
       }
@@ -62,30 +56,81 @@ Show all Events the active User can access and with what permission level.
   },
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/events"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events"
     }
   }
 }
 ```
+</br>
 
+**Condition** : No events.
 
-# Show single Event
+**Code** : `404 Not Found`
 
-Show a singular event the active User can access and with what permission level.
+**Content** :
 
-**URL** : `/api/events/{id}`
+```json
+{ }
+```
+</br>
+
+# Get a Event
+
+Get a single Event the active User can access with current permission level.
+
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}`
 
 **Method** : `GET`
 
-**Auth required** : NO
+**Auth required** : Yes
 
 **Permissions required** : None
 
 **Data constraints** : `{}`
 
-## Success Responses
+## Success Response
 
-**Condition** : Event not found.
+**Condition** : Event found.
+
+**Code** : `200 OK`
+
+**Content** :
+
+```json
+{
+  "name": "String",
+  "dateTime": "LocalDateTime",
+  "ticketCapacity": "Long",
+  "info": "String",
+  "created": "LocalDateTime",
+  "invalid": "LocalDateTime",
+  "_links": {
+    "self": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}"
+    },
+    "eventType": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventType"
+    },
+    "eventOrganizer": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventOrganizer"
+    },
+    "venue": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/venue"
+    },
+    "ageLimit": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/ageLimit"
+    },
+    "eventTickets": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventTickets"
+    }
+  }
+}
+```
+</br>
+
+## Failure Response
+
+**Condition** : Event not found or invalid ID.
 
 **Code** : `404 NOT FOUND`
 
@@ -93,123 +138,58 @@ Show a singular event the active User can access and with what permission level.
 
 ```json
 {
-    "timestamp": "2020-03-12T12:07:56.682+0000",
+    "timestamp": "LocalDateTime",
     "status": 404,
     "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5"
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}"
 }
 ```
+</br>
 
-### OR
+# Get event type
 
-**Condition** : Event found.
+Get event type for given event id.
 
-**Code** : `200 OK`
-
-**Content** : In this example, the User can see the returned event with links to event properties.
-
-```json
-{
-  "name": "Koodari Kemut 2020",
-  "dateTime": "2020-03-01T20:00:00",
-  "ticketCapacity": 1500,
-  "info": "Mika koodaa ja muut kattelee. Kannattaa tulla kauempaakin",
-  "_links": {
-    "self": {
-      "href": "http://127.0.0.1:8080/api/events/1"
-    },
-    "eventType": {
-      "href": "http://127.0.0.1:8080/api/events/1/eventType"
-    },
-    "eventOrganizer": {
-      "href": "http://127.0.0.1:8080/api/events/1/eventOrganizer"
-    },
-    "venue": {
-      "href": "http://127.0.0.1:8080/api/events/1/venue"
-    },
-    "ageLimit": {
-      "href": "http://127.0.0.1:8080/api/events/1/ageLimit"
-    },
-    "eventTickets": {
-      "href": "http://127.0.0.1:8080/api/events/1/eventTickets"
-    }
-  }
-}
-```
-# Show event type
-
-Show event type for given event id.
-
-**URL** : `/api/events/{id}/eventType`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventType`
 
 **Method** : `GET`
 
-**Auth required** : NO
+**Auth required** : Yes
 
 **Permissions required** : None
 
 **Data constraints** : `{}`
 
-## Success Responses
-
-**Condition** : Event type not found.
-
-**Code** : `404 NOT FOUND`
-
-**Content** : 
-
-```json
-{
-    "timestamp": "2020-03-12T12:07:56.682+0000",
-    "status": 404,
-    "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5/eventType"
-}
-```
-
-### OR
+## Success Response
 
 **Condition** : Event type found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see the returned event type.
+**Content** : 
 
 ```json
 {
-  "name": "Teatteri",
-  "info": "Silkkaa teatteria",
+  "name": "String",
+  "info": "String",
+  "created": "LocalDateTime",
+  "invalid": "LocalDateTime",
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/eventTypes/1"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTypes/{id}"
     },
     "events": {
-      "href": "http://127.0.0.1:8080/api/eventTypes/1/events"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTypes/{id}/events"
     }
   }
 }
 ```
+</br>
 
+## Failure Response
 
-# Show event organizer
-
-Show event organizer for given event id.
-
-**URL** : `/api/events/{id}/eventOrganizer`
-
-**Method** : `GET`
-
-**Auth required** : NO
-
-**Permissions required** : None
-
-**Data constraints** : `{}`
-
-## Success Responses
-
-**Condition** : Event organizer not found.
+**Condition** : Invalid event ID.
 
 **Code** : `404 NOT FOUND`
 
@@ -217,59 +197,65 @@ Show event organizer for given event id.
 
 ```json
 {
-    "timestamp": "2020-03-12T12:07:56.682+0000",
+    "timestamp": "LocalDateTime",
     "status": 404,
     "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5/eventOrganizer"
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}/eventType"
 }
 ```
+</br>
 
-### OR
+# Get event organizer
+
+Get event organizer for given event id.
+
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventOrganizer`
+
+**Method** : `GET`
+
+**Auth required** : Yes
+
+**Permissions required** : None
+
+**Data constraints** : `{}`
+
+## Success Response
 
 **Condition** : Event organizer found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see the returned event type.
+**Content** : 
 
 ```json
 {
-  "name": "GREAT EVENTS OY",
-  "streetAddress": "Tapahtumakatu 16 a 78",
-  "tel": "09 7865566",
-  "email": "great@events.fi",
-  "www": "www.greatevents.com",
-  "contactPerson": "Texas Ted",
+  "name": "String",
+  "streetAddress": "String",
+  "tel": "String",
+  "email": "String",
+  "www": "String",
+  "contactPerson": "String",
+  "created": "LocalDateTime",
+  "invalid": "LocalDateTime",
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/eventOrganizers/1"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventOrganizers/{id}"
+    },
+    "postcode": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventOrganizers/{id}/postcode"
     },
     "events": {
-      "href": "http://127.0.0.1:8080/api/eventOrganizers/1/events"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventOrganizers/{id}/events"
     }
   }
 }
 ```
+</br>
 
+## Failure Response
 
-# Show venue
-
-Show Venue for given event id.
-
-**URL** : `/api/events/{id}/venue`
-
-**Method** : `GET`
-
-**Auth required** : NO
-
-**Permissions required** : None
-
-**Data constraints** : `{}`
-
-## Success Responses
-
-**Condition** : Venue not found.
+**Condition** : Invalid event ID.
 
 **Code** : `404 NOT FOUND`
 
@@ -277,59 +263,65 @@ Show Venue for given event id.
 
 ```json
 {
-    "timestamp": "2020-03-12T12:07:56.682+0000",
+    "timestamp": "LocalDateTime",
     "status": 404,
     "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5/venue"
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}/eventOrganizer"
 }
 ```
+</br>
 
-### OR
+# Get event venue
 
-**Condition** : Venue found.
+Get event organizer for given event id.
+
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/venue`
+
+**Method** : `GET`
+
+**Auth required** : Yes
+
+**Permissions required** : None
+
+**Data constraints** : `{}`
+
+## Success Response
+
+**Condition** : Event venue found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see the returned venue.
+**Content** : 
 
 ```json
 {
-  "name": "Helsingin Teatteri",
-  "address": "Kekkosenkatu 3",
-  "tel": "09 1234566",
-  "email": "teatteri@teatteri.fi",
-  "www": "www.helsinginteatteri.com",
-  "contactPerson": "John Wayne",
+  "name": "String",
+  "address": "String",
+  "tel": "String",
+  "email": "String",
+  "www": "String",
+  "contactPerson": "String",
+  "created": "LocalDateTime",
+  "invalid": "LocalDateTime",
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/venues/1"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/venues/{id}"
     },
-    "users": {
-      "href": "http://127.0.0.1:8080/api/venues/1/events"
+    "postcode": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/venues/{id}/postcode"
+    },
+    "events": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/venues/{id}/events"
     }
   }
 }
 ```
+</br>
 
+## Failure Response
 
-# Show event age limit
-
-Show Event age limit for given event id.
-
-**URL** : `/api/events/{id}/ageLimit`
-
-**Method** : `GET`
-
-**Auth required** : NO
-
-**Permissions required** : None
-
-**Data constraints** : `{}`
-
-## Success Responses
-
-**Condition** : Age limit not found.
+**Condition** : Invalid event ID.
 
 **Code** : `404 NOT FOUND`
 
@@ -337,55 +329,58 @@ Show Event age limit for given event id.
 
 ```json
 {
-    "timestamp": "2020-03-12T12:07:56.682+0000",
+    "timestamp": "LocalDateTime",
     "status": 404,
     "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5/ageLimit"
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}/venue"
 }
 ```
+</br>
 
-### OR
+# Get event age limit
 
-**Condition** : Age limit found.
+Get event age limit for given event id.
+
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/ageLimit`
+
+**Method** : `GET`
+
+**Auth required** : Yes
+
+**Permissions required** : None
+
+**Data constraints** : `{}`
+
+## Success Response
+
+**Condition** : Event age limit found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see the returned age limit.
+**Content** : 
 
 ```json
 {
-  "name": "K13",
-  "specifier": "Tapahtuma kielletty alle 13-vuotiailta",
+  "name": "String",
+  "info": "String",
+  "created": "LocalDateTime",
+  "invalid": "LocalDateTime",
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/ageLimits/2"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/ageLimits/{id}"
     },
-    "users": {
-      "href": "http://127.0.0.1:8080/api/ageLimits/1/events"
+    "events": {
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/ageLimits/{id}/events"
     }
   }
 }
 ```
+</br>
 
+## Failure Response
 
-# Show event tickets for sale
-
-Show Event tickets for given event id.
-
-**URL** : `/api/events/{id}/eventTickets`
-
-**Method** : `GET`
-
-**Auth required** : NO
-
-**Permissions required** : None
-
-**Data constraints** : `{}`
-
-## Success Responses
-
-**Condition** : Event tickets not found.
+**Condition** : Invalid event ID.
 
 **Code** : `404 NOT FOUND`
 
@@ -393,33 +388,55 @@ Show Event tickets for given event id.
 
 ```json
 {
-    "timestamp": "2020-03-12T12:07:56.682+0000",
+    "timestamp": "LocalDateTime",
     "status": 404,
     "error": "Not Found",
-    "message": "Invalid ID: 5",
-    "path": "/api/events/5/eventTickets"
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}/ageLimit"
 }
 ```
+</br>
 
-### OR
+# Get event tickets for sale
+
+Get tickets for sale given event id.
+
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}/eventTickets`
+
+**Method** : `GET`
+
+**Auth required** : Yes
+
+**Permissions required** : None
+
+**Data constraints** : `{}`
+
+## Success Response
 
 **Condition** : Event tickets found.
 
 **Code** : `200 OK`
 
-**Content** : In this example, the User can see the returned event ticket.
+**Content** : 
 
 ```json
 {
   "_embedded": {
     "eventTickets": [
       {
-        "ticketCount": 1000,
-        "price": 20,
-        "eventTicket_ID": 1,
+        "ticketCount": "Long",
+        "price": "Double",
+        "created": "LocalDateTime",
+        "invalid": "LocalDateTime",
         "_links": {
           "self": {
-            "href": "http://127.0.0.1:8080/api/eventTickets/1"
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTickets/{id}"
+          },
+          "event": {
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTickets/{id}/event"
+          },
+          "ticketType": {
+            "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/eventTickets/{id}/ticketType"
           }
         }
       }
@@ -427,8 +444,39 @@ Show Event tickets for given event id.
   },
   "_links": {
     "self": {
-      "href": "http://127.0.0.1:8080/api/events"
+      "href": "https://rbmk-ticketguru-backend.herokuapp.com/api/events"
     }
   }
 }
 ```
+</br>
+
+## Failure Responses
+
+**Condition** : Invalid event ID.
+
+**Code** : `404 NOT FOUND`
+
+**Content** : 
+
+```json
+{
+    "timestamp": "LocalDateTime",
+    "status": 404,
+    "error": "Not Found",
+    "message": "Invalid ID: {id}",
+    "path": "/api/events/{id}/eventTickets"
+}
+```
+</br>
+
+**Condition** : Event has no tickets.
+
+**Code** : `404 NOT FOUND`
+
+**Content** : 
+
+```json
+{}
+```
+</br>

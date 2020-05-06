@@ -74,15 +74,13 @@ public class UserController {
         if (user.getInvalid() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify User that is marked as deleted");
         }
-        Set<ConstraintViolation<Object>> violations = validator.validate(newUser);
-        if (!violations.isEmpty()) {
-            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
-            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
-        }
         if (newUser.getPassword() != null && newUser.getPassword() != user.getPassword()) {
             user.setPassword(newUser.getPassword());
         }
-        if (newUser.getName() != null) {
+        if (newUser.getName() != null && newUser.getName() != user.getName()) {
+            user.setName(newUser.getName());
+        }
+        if (newUser.getUsername() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify username");
         }
         if (newUser.getUserGroup() != null && newUser.getUserGroup() != user.getUserGroup()) {
@@ -93,6 +91,11 @@ public class UserController {
         }
         if (newUser.getActive() != null && newUser.getActive() != user.getActive()) {
             user.setActive(newUser.getActive());
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(user);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
         }
         uRepository.save(user);
         UserLinks links = new UserLinks(user);

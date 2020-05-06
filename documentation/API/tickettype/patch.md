@@ -1,10 +1,12 @@
-# Delete a ticket
+# Edit a TicketType
 
-Delete a Ticket
+Edit an Event.
 
-**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/{id}`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/ticketTypes/{id}`
 
-**Method** : `DELETE`
+**Method** : `PATCH`
+
+**Content-Type** : `application/json`
 
 **Auth required** : Yes
 
@@ -12,20 +14,37 @@ Delete a Ticket
 
 **Data constraints**
 
-Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/4
+Provide ID and values to modify.
+
+```json
+{
+    "name": "String 100 chars max"
+}
+```
+
+**Data example**
+
+```json
+{
+    "name": "Varusmies / Siviilipalvelusmies"
+}
+```
 
 ## Success Response
 
 **Condition** : If everything is OK.
 
-**Code** : `204 No Content`
+**Code** : `200 OK`
 
 **Content example**
 
 ```json
-{}
+{
+  "name": "Varusmies / Siviilipalvelusmies",
+  "created": "2020-04-11T00:55:14.961737",
+  "invalid": null
+}
 ```
-</br>
 
 ## Error Responses
 
@@ -40,8 +59,8 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "timestamp": "LocalDateTime",
     "status": 405,
     "error": "Method Not Allowed",
-    "message": "Request method 'DELETE' not supported",
-    "path": "/api/tickets/"
+    "message": "Request method 'PATCH' not supported",
+    "path": "/api/events/"
 }
 ```
 </br>
@@ -58,12 +77,12 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "status": 404,
     "error": "Not Found",
     "message": "Invalid ID: {id}",
-    "path": "/api/tickets/{id}"
+    "path": "/api/ticketTypes/{id}"
 }
 ```
 </br>
 
-**Condition** : Ticket is already marked as deleted.
+**Condition** : TicketType is marked as deleted.
 
 **Code** : `400 Bad Request`
 
@@ -74,7 +93,7 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "timestamp": "LocalDateTime",
     "status": 400,
     "error": "Bad Request",
-    "message": "Cannot modify Ticket that is marked as deleted",
-    "path": "/api/tickets/{id}"
+    "message": "Cannot modify TicketType that is marked as deleted",
+    "path": "/api/ticketTypes/{id}"
 }
 ```

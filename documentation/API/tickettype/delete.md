@@ -1,8 +1,8 @@
-# Delete a ticket
+# Delete a TicketType
 
-Delete a Ticket
+Delete a TicketType
 
-**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/{id}`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/ticketTypes/{id}`
 
 **Method** : `DELETE`
 
@@ -12,7 +12,7 @@ Delete a Ticket
 
 **Data constraints**
 
-Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/tickets/4
+Provide the URL of TicketType to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/ticketTypes/1
 
 ## Success Response
 
@@ -41,7 +41,7 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "status": 405,
     "error": "Method Not Allowed",
     "message": "Request method 'DELETE' not supported",
-    "path": "/api/tickets/"
+    "path": "/api/ticketTypes/"
 }
 ```
 </br>
@@ -58,12 +58,12 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "status": 404,
     "error": "Not Found",
     "message": "Invalid ID: {id}",
-    "path": "/api/tickets/{id}"
+    "path": "/api/ticketTypes/{id}"
 }
 ```
 </br>
 
-**Condition** : Ticket is already marked as deleted.
+**Condition** : TicketType is already marked as deleted.
 
 **Code** : `400 Bad Request`
 
@@ -74,7 +74,7 @@ Provide the URL of Ticket to be deleted e.g. https://rbmk-ticketguru-backend.her
     "timestamp": "LocalDateTime",
     "status": 400,
     "error": "Bad Request",
-    "message": "Cannot modify Ticket that is marked as deleted",
-    "path": "/api/tickets/{id}"
+    "message": "Cannot modify TicketType that is marked as deleted",
+    "path": "/api/ticketTypes/{id}"
 }
 ```

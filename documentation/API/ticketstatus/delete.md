@@ -1,8 +1,8 @@
-# Delete a Event
+# Delete a TicketStatus
 
-Delete a Event
+Delete a TicketStatus
 
-**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/events/{id}`
+**URL** : `https://rbmk-ticketguru-backend.herokuapp.com/api/ticketStatuses/{id}`
 
 **Method** : `DELETE`
 
@@ -12,7 +12,7 @@ Delete a Event
 
 **Data constraints**
 
-Provide the URL of Event to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/events/4
+Provide the URL of TicketStatus to be deleted e.g. https://rbmk-ticketguru-backend.herokuapp.com/api/ticketStatuses/1
 
 ## Success Response
 
@@ -31,17 +31,17 @@ Provide the URL of Event to be deleted e.g. https://rbmk-ticketguru-backend.hero
 
 **Condition** : ID is missing.
 
-**Code** : `405 Method not allowed`
+**Code** : `404 Not Found`
 
 **Content example**
 
 ```json
 {
     "timestamp": "LocalDateTime",
-    "status": 405,
-    "error": "Method Not Allowed",
-    "message": "Request method 'DELETE' not supported",
-    "path": "/api/events/"
+    "status": 404,
+    "error": "Not Found",
+    "message": "No message available", (Kuuluuko tulla tällainen viesti, vai pitäisikö olla erilainen viesti?)
+    "path": "/api/ticketStatuses/"
 }
 ```
 </br>
@@ -54,11 +54,7 @@ Provide the URL of Event to be deleted e.g. https://rbmk-ticketguru-backend.hero
 
 ```json
 {
-    "timestamp": "LocalDateTime",
-    "status": 404,
-    "error": "Not Found",
-    "message": "Invalid ID: {id}",
-    "path": "/api/events/{id}"
+{}
 }
 ```
 </br>

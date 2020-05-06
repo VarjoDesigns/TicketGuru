@@ -59,7 +59,7 @@ public class EventTicket extends ResourceSupport {
     }
 
     // Getters
-    public Long getEventTicket_ID() { return eventTicket_id; }
+    public Long getEventTicket_id() { return eventTicket_id; }
     public Long getTicketCount() { return ticketCount; }
     public Double getPrice() { return price; }
     public LocalDateTime getCreated() { return created; }
