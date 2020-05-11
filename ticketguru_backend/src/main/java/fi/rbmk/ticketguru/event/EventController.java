@@ -86,11 +86,6 @@ public class EventController {
         if (event.getInvalid() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot modify Event that is marked as deleted");
         }
-        Set<ConstraintViolation<Object>> violations = validator.validate(newEvent);
-        if (!violations.isEmpty()) {
-            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
-            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
-        }
         if (newEvent.getName() != null && newEvent.getName() != event.getName()) {
             event.setName(newEvent.getName());
         }
@@ -126,6 +121,11 @@ public class EventController {
         }
         if (newEvent.getInfo() != null && newEvent.getInfo() != event.getInfo()) {
             event.setInfo(newEvent.getInfo());
+        }
+        Set<ConstraintViolation<Object>> violations = validator.validate(event);
+        if (!violations.isEmpty()) {
+            ConstraintViolationParser constraintViolationParser = new ConstraintViolationParser(violations, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(constraintViolationParser.parse());
         }
         eRepository.save(event);
         EventLinks links = new EventLinks(event);

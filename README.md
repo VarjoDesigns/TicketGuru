@@ -1,12 +1,12 @@
 ## TicketGuru - lipunmyyntijärjestelmä
 
-Projektin tarkoituksena on tuottaa lipunmyyntijärjestelmä TicketGuru –nimiselle toimitsijalle. Toimitsija toimii projektin aloittaessa kivijalkaliike-periaatteella, mutta toimitsijan tarkoituksena on jatkokehittää ja laajentaa palveluitaan myös verkkokaupan suuntaan, jonka myötä asiakkaat voivat itse ostaa ja tulostaa lippuja suoraan järjestelmän verkkokaupasta.
+Projektin tarkoituksena on tuottaa TicketGuru -niminen lipunmyyntijärjestelmä. Toimitsija toimii projektin aloittaessa kivijalkaliike-periaatteella, mutta toimitsijan tarkoituksena on jatkokehittää ja laajentaa palveluitaan myös verkkokaupan suuntaan, jonka myötä asiakkaat voivat itse ostaa ja tulostaa lippuja suoraan järjestelmän verkkokaupasta.
 
 Toimitsijan tulee pystyä määrittelemään järjestelmään tapahtumat tietoineen (tapahtuma, lippukapasiteetti, lipputyypit, aika ja paikka, jne.), joihin lippuja myydään. Liput tulee pystyä tulostamaan järjestelmästä asiakkaalle myynnin yhteydessä. Lisäksi, ennakkomyynnin loputtua, jäljellä olevien lippujen tulostus, ovella myynti sekä lippujen tarkastaminen ovella lipulla olevan koodin perusteella tulee mahdollistaa järjestelmän kautta. Järjestelmästä on myös pystyttävä myyntiraportti halutusta tilaisuudesta ja tarkempi myyntitapahtuma listaus samaisen tapahtuman myyntitapahtumista.
 
 TicketGurun tilaaman lipunmyyntijärjestelmän tarkoituksena on koota tiedot järjestettävistä tilaisuuksista (tilaisuuden laji, paikka, ikärajat, lippuryhmät, jne.) yhden ja saman tietojärjestelmän sisälle, joka mahdollistaa lippumyynnin helposti.
 
-Lipunmyyntijärjestelmä on tarkoitettu aluksi käytettäväksi TicketGurun myyntipisteessä TicketGurun työntekijöiden toimesta, myöhemmin tarkoitus laajentaa käytettäväksi myös asiakkaiden toimesta verkkokaupan muodossa.
+Lipunmyyntijärjestelmä on tarkoitettu aluksi käytettäväksi myyntipisteissä työntekijöiden toimesta.
 
 Toteutus- ja toimintaympäristö:
 
@@ -14,9 +14,9 @@ Toteutus- ja toimintaympäristö:
 
 - SpringBoot
 
-- Thymeleaf / React
+- React
 
-- MariaDB
+- PostgreSQL
 
 Järjestelmä on tarkoitettu käytettäväksi selaimen kautta päätteellä, ja sen on tarkoitus olla selainriippumaton.
 
@@ -70,23 +70,19 @@ Alkuperäinen UI wireframe dokumentti, josta näkyy perus toiminallisuus.
 
 Esimerkillinen landing page sisäänkirjautumisen jälkeen.
 
-- [Homepage](https://github.com/marko-airisto/TicketGuru/blob/master/images/Homepage.png)
+- [Homepage](https://github.com/marko-airisto/TicketGuru/blob/master/documentation/images/Homepage.png)
 
 Esimerkillinen lipunmyynti näkymä.
 
-- [Ticket Window](https://github.com/marko-airisto/TicketGuru/blob/master/images/ChooseTicket.png)
+- [Ticket Window](https://github.com/marko-airisto/TicketGuru/blob/master/documentation/images/ChooseTicket.png)
 
 Esimerkillinen tapahtuman luonti/editointi näkymä.
 
-- [Edit Event](https://github.com/marko-airisto/TicketGuru/blob/master/images/EditTicket.png)
+- [Edit Event](https://github.com/marko-airisto/TicketGuru/blob/master/documentation/images/EditTicket.png)
 
-## Tietokanta
+## Tietokantadokumentaatio
 
-- [EER-kaavio tietokannasta](https://github.com/marko-airisto/TicketGuru/blob/master/EER.pdf)
-
-## Tietohakemisto
-
-- [Tietohakemisto](https://github.com/marko-airisto/TicketGuru/blob/master/TicketGuruDB.md)
+- [Tietohakemisto](https://github.com/marko-airisto/TicketGuru/blob/master/documentation/DB/README.md)
 
 ## REST API dokumentaatio
 
@@ -119,10 +115,14 @@ käyttäjätunnus, salasana, tietokannan luonti yms.).
 
 ## Käynnistys- ja käyttöohje
 
-Tyypillisesti tässä riittää kertoa ohjelman käynnistykseen tarvittava URL sekä
-mahdolliset kirjautumiseen tarvittavat tunnukset. Jos järjestelmän
-käynnistämiseen tai käyttöön liittyy joitain muita toimenpiteitä tai toimintajärjestykseen liittyviä asioita, nekin kerrotaan tässä yhteydessä.
+Järjestelmä pyörii Heroku -sovelluspalvelimella.
+Sovelluksen käynnistykseen riittää allaolevan kirjautumisosoitteen avaaminen.
+(REST API)
+https://rbmk-ticketguru-backend.herokuapp.com/api/login
+  
+(Referenssitoteutus UI:sta)
+https://ticketguru-heroku.herokuapp.com/auth/login
+  
+Järjestelmään kirjaudutaan sisään joko pääkäyttäjätason tai myyntihenkilön tunnuksilla.
 
-Usko tai älä, tulet tarvitsemaan tätä itsekin, kun tauon jälkeen palaat
-järjestelmän pariin !
-
+Järjestelmää käytetään joko REST API:n kautta. Dokumentaatio API-kutsuista löytyy täältä: [Tietohakemisto](https://github.com/marko-airisto/TicketGuru/blob/master/documentation/DB/README.md)
